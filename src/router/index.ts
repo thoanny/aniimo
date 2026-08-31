@@ -1,8 +1,15 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import AniilogView from '@/views/AniilogView.vue';
+import DatabaseView from '@/views/DatabaseView.vue';
+import { createRouter, createWebHistory } from 'vue-router';
+
+const routes = [
+  { path: '/', component: AniilogView },
+  { path: '/database', component: DatabaseView },
+];
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [],
-})
+  routes,
+});
 
-export default router
+export default router;
