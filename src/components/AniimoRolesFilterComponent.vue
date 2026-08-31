@@ -74,7 +74,7 @@ const rolesFiltered = computed(() => {
 });
 
 onMounted(() => {
-  popover.value.addEventListener('toggle', (event) => {
+  popover.value.addEventListener('toggle', (event: ToggleEvent) => {
     isOpen.value = event.newState === 'open';
   });
 });
