@@ -50,6 +50,7 @@
   --color-aniimo-dark: oklch(0.46 0.05 284.43 / 1);
 }
 
+html,
 body {
   @apply min-h-dvh bg-base-200 bg-linear-to-b from-[#b7cff2] via-[#d4d3ea] to-[#e3dade] bg-fixed;
 }
