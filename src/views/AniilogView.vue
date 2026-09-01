@@ -1,30 +1,38 @@
 <template>
-  <div class="flex flex-col lg:flex-row justify-between lg:items-center gap-2">
+  <div class="flex flex-col md:flex-row justify-between lg:items-center gap-2">
     <div class="flex flex-col md:flex-row gap-2">
-      <AniimoFormsFilterComponent v-model="formFilter" />
-      <AniimoElementsFilterComponent v-model="elementFilter" />
-      <AniimoRolesFilterComponent v-model="roleFilter" />
+      <AniimoFormsFilterComponent />
+      <AniimoElementsFilterComponent />
+      <AniimoRolesFilterComponent />
       <button
-        class="btn md:btn-square justify-start md:justify-center"
-        v-if="formFilter || elementFilter || roleFilter"
-        @click.prevent="
-          () => {
-            formFilter = undefined;
-            elementFilter = undefined;
-            roleFilter = undefined;
-          }
-        "
+        class="btn btn-sm md:btn-square justify-start md:justify-center"
+        v-if="filters.form || filters.element || filters.role"
+        @click="resetFilters"
       >
         <IconX class="size-4" />
         <span class="md:hidden">Réinitialiser les filtre</span>
       </button>
+      <div class="flex gap-2">
+        <div
+          class="self-center text-xs flex items-center gap-1 font-semibold"
+          title="Aniimo affichés/total"
+        >
+          <IconEye class="size-4" />
+          {{ aniimoFiltered.length }}/{{ aniimoTotal }}
+        </div>
+        <div
+          class="self-center text-xs flex items-center gap-1 font-semibold"
+          title="Aniimo capturés"
+          v-if="aniimoCaughtTotal > 0"
+        >
+          <IconSquareArrowDown class="size-4" />
+          {{ aniimoCaughtTotal }}
+        </div>
+      </div>
     </div>
 
     <div>
-      <label class="flex gap-2 items-center">
-        <input type="checkbox" class="toggle toggle-sm" v-model="caughtFilter" />
-        <span class="text-sm">Masquer capturés</span>
-      </label>
+      <AniimoSettingsModalComponent />
     </div>
   </div>
 
@@ -32,13 +40,13 @@
     <div
       class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4 sm:gap-6"
     >
-      <div class="" v-for="aniimo in filteredAniimo" :key="aniimo.id">
+      <div class="" v-for="aniimo in aniimoFiltered" :key="aniimo.id">
         <div
           class="w-full h-full aspect-[210/390] rounded-box border-2 border-base-100 relative shadow-lg hover:shadow-xl overflow-hidden transition-all cursor-pointer"
           :class="{
             'border-green-300': aniimo.caught,
           }"
-          @click="toggle(aniimo.id)"
+          @click="toggleCaught(aniimo.id)"
         >
           <AniimoBackgroundComponent
             class="w-[135%] sm:w-[130%] -mx-[15%] absolute z-10"
@@ -109,17 +117,20 @@ import AniimoElementsFilterComponent from '@/components/AniimoElementsFilterComp
 import AniimoFormsFilterComponent from '@/components/AniimoFormsFilterComponent.vue';
 import AniimoRoleComponent from '@/components/AniimoRoleComponent.vue';
 import AniimoRolesFilterComponent from '@/components/AniimoRolesFilterComponent.vue';
-import aniimoData from '@/data/aniimo.json';
+import AniimoSettingsModalComponent from '@/components/AniimoSettingsModalComponent.vue';
 import { useAniilogStore } from '@/stores/aniilog';
-import { IconGenderFemale, IconGenderMale, IconX } from '@tabler/icons-vue';
-import { computed, ref } from 'vue';
+import {
+  IconEye,
+  IconGenderFemale,
+  IconGenderMale,
+  IconSquareArrowDown,
+  IconX,
+} from '@tabler/icons-vue';
+import { storeToRefs } from 'pinia';
 
 const aniilogStore = useAniilogStore();
-const { toggle } = aniilogStore;
-const formFilter = ref<number>();
-const roleFilter = ref<number>();
-const elementFilter = ref<number>();
-const caughtFilter = ref<boolean>();
+const { toggleCaught, resetFilters } = aniilogStore;
+const { filters, aniimoFiltered, aniimoTotal, aniimoCaughtTotal } = storeToRefs(aniilogStore);
 
 const getImageUrl = (path: string | undefined): string => {
   if (!path || typeof path === 'undefined') {
@@ -127,38 +138,6 @@ const getImageUrl = (path: string | undefined): string => {
   }
   return '/img/aniimo/' + path.split('/').pop();
 };
-
-const filteredAniimo = computed(() => {
-  return aniimoData
-    .map((aniimo) => ({
-      ...aniimo,
-      caught: aniilogStore.aniimo.indexOf(aniimo.id) >= 0,
-    }))
-    .filter((aniimo) => {
-      if (!formFilter.value) {
-        return true;
-      }
-      return aniimo.fields.Form.id === formFilter.value;
-    })
-    .filter((aniimo) => {
-      if (!elementFilter.value) {
-        return true;
-      }
-      return aniimo.fields.Elements.map((element) => element.id).indexOf(elementFilter.value) >= 0;
-    })
-    .filter((aniimo) => {
-      if (!roleFilter.value) {
-        return true;
-      }
-      return aniimo.fields.Roles.map((role) => role.id).indexOf(roleFilter.value) >= 0;
-    })
-    .filter((aniimo) => {
-      if (!caughtFilter.value) {
-        return true;
-      }
-      return aniimo.caught !== true;
-    });
-});
 </script>
 
 <style scoped>

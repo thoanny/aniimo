@@ -5,10 +5,10 @@ import AniimoFansiteLogo from './assets/AniimoFansiteLogo.vue';
 
 <template>
   <header class="mb-6">
-    <div class="navbar bg-aniimo-dark text-neutral-content shadow-sm">
+    <div class="navbar bg-neutral text-neutral-content shadow-sm">
       <div class="flex-1">
         <RouterLink to="/" class="inline-flex gap-1 px-2 text-xl items-center">
-          <AniimoFansiteLogo class="size-10" />
+          <AniimoFansiteLogo class="size-8" />
           <span class="hidden sm:block">Aniimo | Fansite</span>
         </RouterLink>
       </div>
