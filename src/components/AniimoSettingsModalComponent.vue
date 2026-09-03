@@ -1,10 +1,7 @@
 <template>
-  <button
-    class="btn btn-block btn-sm md:btn-square justify-start md:justify-center"
-    @click="openModal"
-  >
+  <button class="btn btn-neutral btn-block lg:btn-square" @click="openModal">
     <IconSettings stroke="1.75" class="size-5" />
-    <span class="md:hidden">Paramètres</span>
+    <span class="lg:hidden">Paramètres</span>
   </button>
   <dialog ref="modal" class="modal">
     <div class="modal-box max-w-sm">

@@ -1,39 +1,60 @@
 <template>
-  <div class="flex flex-col md:flex-row justify-between lg:items-center gap-2">
-    <div class="flex flex-col md:flex-row gap-2">
-      <AniimoFormsFilterComponent />
-      <AniimoElementsFilterComponent />
-      <AniimoRolesFilterComponent />
-      <AniimoHomelandAbilityFilterComponent />
-      <button
-        class="btn btn-sm md:btn-square justify-start md:justify-center"
-        v-if="filters.form || filters.element || filters.role || filters.homelandAbility"
-        @click="resetFilters"
-      >
-        <IconX class="size-4" />
-        <span class="md:hidden">Réinitialiser les filtre</span>
-      </button>
-      <div class="flex gap-2">
-        <div
-          class="self-center text-xs flex items-center gap-1 font-semibold"
-          title="Aniimo affichés/total"
+  <div class="flex flex-col gap-2">
+    <div class="flex flex-col lg:flex-row gap-2">
+      <div class="grow">
+        <label class="input w-full">
+          <IconSearch class="size-5 text-base-content/50 shrink-0" />
+          <input
+            type="text"
+            class="grow"
+            placeholder="Chercher un aniimo..."
+            v-model="searchQuery"
+          />
+          <button
+            class="btn btn-ghost btn-square btn-sm -mr-2"
+            v-if="searchQuery"
+            @click="
+              () => {
+                searchQuery = '';
+              }
+            "
+          >
+            <IconX class="size-4" />
+          </button>
+        </label>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-row flex-wrap gap-2">
+        <AniimoFormsFilterComponent />
+        <AniimoElementsFilterComponent />
+        <AniimoRolesFilterComponent />
+        <AniimoHomelandAbilityFilterComponent />
+        <button
+          class="btn btn-neutral lg:btn-square"
+          :disabled="!filters.form && !filters.element && !filters.role && !filters.homelandAbility"
+          @click="resetFilters"
         >
-          <IconEye class="size-4" />
-          {{ aniimoFiltered.length }}/{{ aniimoTotal }}
-        </div>
-        <div
-          class="self-center text-xs flex items-center gap-1 font-semibold"
-          title="Aniimo capturés"
-          v-if="aniimoCaughtTotal > 0"
-        >
-          <IconSquareArrowDown class="size-4" />
-          {{ aniimoCaughtTotal }}
-        </div>
+          <IconX class="size-4" />
+          <span class="lg:hidden">Réinitialiser les filtre</span>
+        </button>
+        <AniimoSettingsModalComponent />
       </div>
     </div>
-
-    <div>
-      <AniimoSettingsModalComponent />
+    <div class="flex gap-2">
+      <div
+        class="text-base-content/75 text-sm flex items-center gap-1 font-semibold"
+        title="Aniimo affichés/total"
+      >
+        <IconEye class="size-5" />
+        Affichés : {{ aniimoFiltered.length }}/{{ aniimoTotal }}
+      </div>
+      <div
+        class="text-base-content/75 text-sm flex items-center gap-1 font-semibold"
+        title="Aniimo capturés"
+        v-if="aniimoCaughtTotal > 0"
+      >
+        <IconSquareArrowDown class="size-5" />
+        Capturés : {{ aniimoCaughtTotal }}
+      </div>
     </div>
   </div>
 
@@ -134,6 +155,7 @@ import {
   IconEye,
   IconGenderFemale,
   IconGenderMale,
+  IconSearch,
   IconSquareArrowDown,
   IconX,
 } from '@tabler/icons-vue';
@@ -141,7 +163,8 @@ import { storeToRefs } from 'pinia';
 
 const aniilogStore = useAniilogStore();
 const { toggleCaught, resetFilters } = aniilogStore;
-const { filters, aniimoFiltered, aniimoTotal, aniimoCaughtTotal } = storeToRefs(aniilogStore);
+const { filters, aniimoFiltered, aniimoTotal, aniimoCaughtTotal, searchQuery } =
+  storeToRefs(aniilogStore);
 
 const getImageUrl = (path: string | undefined): string => {
   if (!path || typeof path === 'undefined') {

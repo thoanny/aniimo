@@ -1,18 +1,18 @@
 <template>
   <div>
     <button
-      class="btn btn-sm w-full md:w-46"
+      class="btn w-full lg:w-43"
       :popovertarget="`popover-${key}`"
       :style="`anchor-name: --anchor-${key}`"
     >
       <span class="grow flex items-center gap-2">
-        {{ formSelected ? `${formSelected.fields.Title} Form` : 'Toutes les formes' }}
+        {{ formSelected ? `${formSelected.fields.Title}` : '-- Formes --' }}
       </span>
       <IconChevronUp class="size-5 shrink-0" v-if="isOpen" />
       <IconChevronDown class="size-5 shrink-0" v-else />
     </button>
     <ul
-      class="dropdown menu menu-sm bg-base-100 rounded-box z-40 shadow-sm mt-1 w-46"
+      class="dropdown menu bg-base-100 rounded-box z-40 shadow-sm mt-1 w-43 max-h-[75dvh]"
       popover
       :id="`popover-${key}`"
       :style="`position-anchor: --anchor-${key}`"
@@ -27,8 +27,11 @@
               popover.hidePopover();
             }
           "
+          :class="{
+            'menu-active': undefined === formSelected?.id,
+          }"
         >
-          Toutes les formes
+          -- Formes --
         </a>
       </li>
       <li v-for="form in formsFiltered" :key="form.id">
@@ -40,8 +43,11 @@
               popover.hidePopover();
             }
           "
+          :class="{
+            'menu-active': form.id === formSelected?.id,
+          }"
         >
-          {{ form.fields.Title }} Form
+          {{ form.fields.Title }}
         </a>
       </li>
     </ul>
@@ -59,7 +65,7 @@ const { setFilter } = aniilogStore;
 const { formsFiltered, formSelected } = storeToRefs(aniilogStore);
 const key = (Math.random() + 1).toString(36).substring(5);
 const popover = ref();
-const isOpen = ref(false);
+const isOpen = ref<boolean>(false);
 
 onMounted(() => {
   popover.value.addEventListener('toggle', (event: ToggleEvent) => {

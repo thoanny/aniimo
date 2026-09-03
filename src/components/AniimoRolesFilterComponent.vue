@@ -1,7 +1,7 @@
 <template>
   <div>
     <button
-      class="btn btn-sm w-full md:w-32"
+      class="btn w-full lg:w-34"
       :popovertarget="`popover-${key}`"
       :style="`anchor-name: --anchor-${key}`"
     >
@@ -11,13 +11,13 @@
           v-html="roleSelected.fields.Icon"
           class="size-5 shrink-0"
         ></div>
-        {{ roleSelected ? roleSelected.fields.Title : 'Tous les rôles' }}
+        {{ roleSelected ? roleSelected.fields.Title : '-- Rôles --' }}
       </span>
       <IconChevronUp class="size-5 shrink-0" v-if="isOpen" />
       <IconChevronDown class="size-5 shrink-0" v-else />
     </button>
     <ul
-      class="dropdown menu menu-sm bg-base-100 rounded-box z-40 shadow-sm mt-1 w-32"
+      class="dropdown menu bg-base-100 rounded-box z-40 shadow-sm mt-1 w-34"
       popover
       :id="`popover-${key}`"
       :style="`position-anchor: --anchor-${key}`"
@@ -32,8 +32,11 @@
               popover.hidePopover();
             }
           "
+          :class="{
+            'menu-active': undefined === roleSelected?.id,
+          }"
         >
-          Tous les rôles
+          -- Rôles --
         </a>
       </li>
       <li v-for="role in rolesFiltered" :key="role.id">
@@ -45,6 +48,9 @@
               popover.hidePopover();
             }
           "
+          :class="{
+            'menu-active': role.id === roleSelected?.id,
+          }"
         >
           <div v-if="role.fields.Icon" v-html="role.fields.Icon" class="size-5"></div>
           {{ role.fields.Title }}

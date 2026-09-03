@@ -1,7 +1,7 @@
 <template>
   <div>
     <button
-      class="btn btn-sm w-full md:w-38"
+      class="btn w-full lg:w-40"
       :popovertarget="`popover-${key}`"
       :style="`anchor-name: --anchor-${key}`"
     >
@@ -12,13 +12,13 @@
           class="size-5 shrink-0"
           :class="`text-ability-${homelandAbilitySelected?.id}`"
         ></div>
-        {{ homelandAbilitySelected ? homelandAbilitySelected.fields.Title : 'Toutes les abilités' }}
+        {{ homelandAbilitySelected ? homelandAbilitySelected.fields.Title : '-- Abilités --' }}
       </span>
       <IconChevronUp class="size-5 shrink-0" v-if="isOpen" />
       <IconChevronDown class="size-5 shrink-0" v-else />
     </button>
     <ul
-      class="dropdown menu menu-sm bg-base-100 rounded-box z-40 shadow-sm mt-1 w-38"
+      class="dropdown menu bg-base-100 rounded-box z-40 shadow-sm mt-1 w-40"
       popover
       :id="`popover-${key}`"
       :style="`position-anchor: --anchor-${key}`"
@@ -33,8 +33,11 @@
               popover.hidePopover();
             }
           "
+          :class="{
+            'menu-active': undefined === homelandAbilitySelected?.id,
+          }"
         >
-          Toutes les abilités
+          -- Abilités --
         </a>
       </li>
       <li v-for="ability in homelandAbilitiesFiltered" :key="ability.id">
@@ -46,12 +49,15 @@
               popover.hidePopover();
             }
           "
+          :class="{
+            'menu-active': ability.id === homelandAbilitySelected?.id,
+          }"
         >
           <div
             v-if="ability.fields.Icon"
             v-html="ability.fields.Icon"
             class="size-5"
-            :class="`text-ability-${ability.id}`"
+            :class="ability.id === homelandAbilitySelected?.id ? '' : `text-ability-${ability.id}`"
           ></div>
           {{ ability.fields.Title }}
         </a>

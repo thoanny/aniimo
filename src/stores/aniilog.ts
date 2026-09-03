@@ -4,6 +4,7 @@ import elementsData from '@/data/elements.json';
 import formsData from '@/data/forms.json';
 import homelandAbilities from '@/data/homeland-abilities.json';
 import rolesData from '@/data/roles.json';
+import Fuse from 'fuse.js/basic';
 import { defineStore } from 'pinia';
 
 const aniimoHomelandAbilitiesTable = aniimoHomelandAbilities.map((aniimoHomelandAbility) => ({
@@ -28,7 +29,7 @@ const defaultFilters: Filters = {
 };
 
 export const useAniilogStore = defineStore('aniilog', {
-  state: () => ({ aniimo: <number[]>[], filters: { ...defaultFilters } }),
+  state: () => ({ aniimo: <number[]>[], filters: { ...defaultFilters }, searchQuery: <string>'' }),
   getters: {
     aniimoTotal: (): number => {
       return aniimoData.length;
@@ -37,7 +38,7 @@ export const useAniilogStore = defineStore('aniilog', {
       return state.aniimo.length;
     },
     aniimoFiltered: (state) => {
-      return aniimoData
+      const aniimo = aniimoData
         .map((aniimo) => ({
           ...aniimo,
           caught: state.aniimo.indexOf(aniimo.id) >= 0,
@@ -79,6 +80,20 @@ export const useAniilogStore = defineStore('aniilog', {
           }
           return aniimo.caught !== true;
         });
+
+      if (!state.searchQuery) {
+        return aniimo;
+      }
+
+      const fuse = new Fuse(aniimo, {
+        keys: ['fields.Title'],
+        ignoreDiacritics: true,
+      });
+
+      return fuse.search(state.searchQuery).map(({ item, score }) => ({
+        ...item,
+        _score: score,
+      }));
     },
     formsFiltered: () => {
       return formsData.sort((a, b) => a.fields.Title.localeCompare(b.fields.Title));
@@ -130,5 +145,7 @@ export const useAniilogStore = defineStore('aniilog', {
       this.filters = { ...defaultFilters };
     },
   },
-  persist: true,
+  persist: {
+    pick: ['aniimo', 'filters'],
+  },
 });
