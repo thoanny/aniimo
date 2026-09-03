@@ -1,4 +1,6 @@
 <template>
+  <!-- <pre class="border">{{ aniilogStore.homeland }}</pre> -->
+  <!-- <pre class="border">{{ aniilogStore.homelandAbilitiesTotals }}</pre> -->
   <div class="flex flex-col gap-2">
     <div class="flex flex-col lg:flex-row gap-2">
       <div class="grow">
@@ -55,8 +57,11 @@
         <IconSquareArrowDown class="size-5" />
         Capturés : {{ aniimoCaughtTotal }}
       </div>
+      <AniimoHomelandModalComponent />
     </div>
   </div>
+
+  <!-- <pre v-if="menu.visible.value">{{ activeAniimo }}</pre> -->
 
   <div class="py-6">
     <div
@@ -64,11 +69,18 @@
     >
       <div class="" v-for="aniimo in aniimoFiltered" :key="aniimo.id">
         <div
-          class="w-full h-full aspect-[210/390] rounded-box border-2 border-base-100 relative shadow-lg hover:shadow-xl overflow-hidden transition-all cursor-pointer"
+          class="w-full h-full aspect-[210/390] rounded-box border-2 border-base-100 relative shadow-lg hover:shadow-xl overflow-hidden transition-all cursor-pointer outline-offset-2"
           :class="{
             'border-green-300': aniimo.caught,
+            'outline-2': menu.visible.value && aniimo.id === activeAniimo.id,
           }"
           @click="toggleCaught(aniimo.id)"
+          @contextmenu.prevent.stop="
+            (e) => {
+              activeAniimo = aniimo;
+              menu.open(e);
+            }
+          "
         >
           <AniimoBackgroundComponent
             class="w-[135%] sm:w-[130%] -mx-[15%] absolute z-10"
@@ -90,8 +102,10 @@
             N°{{ aniimo.fields.Number.toString().padStart(3, '0') }}
           </div>
 
+          <IconHomeFilled class="absolute top-1 right-1 z-30 size-5" v-if="aniimo.homeland" />
+
           <img
-            :src="getImageUrl(aniimo.fields.Image[0]?.path)"
+            :src="getAniimoImageUrl(aniimo.fields.Image[0]?.path)"
             class="w-full h-full object-cover object-bottom pb-12 z-20 absolute"
             v-if="aniimo.fields.Image"
           />
@@ -137,6 +151,53 @@
         </div>
       </div>
     </div>
+    <ContextMenuComponent :visible="menu.visible.value" :x="menu.x.value" :y="menu.y.value">
+      <!-- <li>{{ activeAniimo }}</li> -->
+      <li class="menu-title flex-row justify-between" v-if="false">
+        <div class="flex flex-col text-sm">
+          <span class="font-bold">{{ activeAniimo.fields.Title }}</span>
+          <small class="text-xs">{{ activeAniimo.fields.Form.fields.Title }}</small>
+        </div>
+        <div class="text-xs">N°{{ activeAniimo.fields.Number.toString().padStart(3, '0') }}</div>
+      </li>
+      <li class="separator"></li>
+      <li>
+        <a
+          @click="
+            () => {
+              toggleCaught(activeAniimo.id);
+              menu.close();
+            }
+          "
+        >
+          <IconSquareArrowDown class="size-4" v-if="!activeAniimo.caught" />
+          <IconSquareArrowUp class="size-4" v-else />
+          {{ activeAniimo.caught ? 'Marquer comme non capturé' : 'Marquer comme capturé' }}
+        </a>
+      </li>
+      <li class="separator !my-0"></li>
+      <li>
+        <a
+          @click="
+            () => {
+              toggleHomeland(activeAniimo.id);
+              menu.close();
+            }
+          "
+        >
+          <IconHomePlus class="size-4 shrink-0" v-if="!activeAniimo.homeland" />
+          <IconHomeMinus class="size-4" v-else />
+          {{ activeAniimo.homeland ? 'Retirer du Homeland' : 'Ajouter au Homeland' }}
+        </a>
+      </li>
+      <li class="separator"></li>
+      <li v-if="false">
+        <a @click="() => {}">
+          <IconStar class="size-4" />
+          Ajouter/Retirer aux favoris
+        </a>
+      </li>
+    </ContextMenuComponent>
   </div>
 </template>
 
@@ -147,36 +208,44 @@ import AniimoElementsFilterComponent from '@/components/AniimoElementsFilterComp
 import AniimoFormsFilterComponent from '@/components/AniimoFormsFilterComponent.vue';
 import AniimoHomelandAbilityComponent from '@/components/AniimoHomelandAbilityComponent.vue';
 import AniimoHomelandAbilityFilterComponent from '@/components/AniimoHomelandAbilityFilterComponent.vue';
+import AniimoHomelandModalComponent from '@/components/AniimoHomelandModalComponent.vue';
 import AniimoRoleComponent from '@/components/AniimoRoleComponent.vue';
 import AniimoRolesFilterComponent from '@/components/AniimoRolesFilterComponent.vue';
 import AniimoSettingsModalComponent from '@/components/AniimoSettingsModalComponent.vue';
+import ContextMenuComponent from '@/components/ContextMenuComponent.vue';
+import { useContextMenu } from '@/composables/usecontextMenu';
 import { useAniilogStore } from '@/stores/aniilog';
+import { getAniimoImageUrl } from '@/utils/image';
 import {
   IconEye,
   IconGenderFemale,
   IconGenderMale,
+  IconHomeFilled,
+  IconHomeMinus,
+  IconHomePlus,
   IconSearch,
   IconSquareArrowDown,
+  IconSquareArrowUp,
+  IconStar,
   IconX,
 } from '@tabler/icons-vue';
 import { storeToRefs } from 'pinia';
+import { ref } from 'vue';
 
 const aniilogStore = useAniilogStore();
-const { toggleCaught, resetFilters } = aniilogStore;
+const { toggleCaught, resetFilters, toggleHomeland } = aniilogStore;
 const { filters, aniimoFiltered, aniimoTotal, aniimoCaughtTotal, searchQuery } =
   storeToRefs(aniilogStore);
-
-const getImageUrl = (path: string | undefined): string => {
-  if (!path || typeof path === 'undefined') {
-    return '/img/aniimo/default.png';
-  }
-  return '/img/aniimo/' + path.split('/').pop();
-};
+const menu = useContextMenu();
+const activeAniimo = ref();
 </script>
 
 <style scoped>
 details div :deep(svg) {
   width: 100%;
   height: 100%;
+}
+li.separator {
+  margin: 0;
 }
 </style>

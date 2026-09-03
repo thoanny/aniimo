@@ -10,6 +10,7 @@ import { defineStore } from 'pinia';
 const aniimoHomelandAbilitiesTable = aniimoHomelandAbilities.map((aniimoHomelandAbility) => ({
   aniimoHomelandAbilityId: aniimoHomelandAbility.id,
   homelandAbilityId: aniimoHomelandAbility.fields.HomelandAbility.id,
+  level: aniimoHomelandAbility.fields.Level,
 }));
 
 type Filters = {
@@ -29,7 +30,12 @@ const defaultFilters: Filters = {
 };
 
 export const useAniilogStore = defineStore('aniilog', {
-  state: () => ({ aniimo: <number[]>[], filters: { ...defaultFilters }, searchQuery: <string>'' }),
+  state: () => ({
+    aniimo: <number[]>[],
+    homeland: <number[]>[],
+    filters: { ...defaultFilters },
+    searchQuery: <string>'',
+  }),
   getters: {
     aniimoTotal: (): number => {
       return aniimoData.length;
@@ -42,6 +48,7 @@ export const useAniilogStore = defineStore('aniilog', {
         .map((aniimo) => ({
           ...aniimo,
           caught: state.aniimo.indexOf(aniimo.id) >= 0,
+          homeland: state.homeland.indexOf(aniimo.id) >= 0,
         }))
         .filter((aniimo) => {
           if (!state.filters.form) {
@@ -95,6 +102,9 @@ export const useAniilogStore = defineStore('aniilog', {
         _score: score,
       }));
     },
+    aniimoHomelandFiltered: (state) => {
+      return aniimoData.filter((aniimo) => state.homeland.indexOf(aniimo.id) >= 0);
+    },
     formsFiltered: () => {
       return formsData.sort((a, b) => a.fields.Title.localeCompare(b.fields.Title));
     },
@@ -121,6 +131,29 @@ export const useAniilogStore = defineStore('aniilog', {
         (homelandAbility) => homelandAbility.id === state.filters.homelandAbility,
       );
     },
+    homelandAbilitiesTotals: (state) => {
+      const totals = new Map<number, number>();
+
+      state.homeland.forEach((aniimoId) => {
+        const aniimo = aniimoData.find((a) => a.id === aniimoId);
+        if (!aniimo) return;
+
+        aniimo.fields.HomelandAbilities.forEach((ability) => {
+          const entry = aniimoHomelandAbilitiesTable.find(
+            (table) => table.aniimoHomelandAbilityId === ability.id,
+          );
+          if (!entry) return;
+
+          const current = totals.get(entry.homelandAbilityId) ?? 0;
+          totals.set(entry.homelandAbilityId, current + entry.level);
+        });
+      });
+
+      return Array.from(totals.entries()).map(([id, total]) => {
+        const homelandAbility = homelandAbilities.find((h) => h.id === id);
+        return { id, icon: homelandAbility?.fields.Icon, total };
+      });
+    },
   },
   actions: {
     toggleCaught(aniimoId: number) {
@@ -142,10 +175,19 @@ export const useAniilogStore = defineStore('aniilog', {
     },
     resetStoreState() {
       this.aniimo = [];
+      this.homeland = [];
       this.filters = { ...defaultFilters };
+    },
+    toggleHomeland(aniimoId: number) {
+      const idx = this.homeland.indexOf(aniimoId);
+      if (idx < 0) {
+        this.homeland.push(aniimoId);
+      } else {
+        this.homeland.splice(idx, 1);
+      }
     },
   },
   persist: {
-    pick: ['aniimo', 'filters'],
+    pick: ['aniimo', 'homeland', 'filters'],
   },
 });
