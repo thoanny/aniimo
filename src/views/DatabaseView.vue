@@ -1,4 +1,6 @@
 <template>
+  <!-- <pre>{{ aniimoHomelandAbilities }}</pre> -->
+  <!-- <pre>{{ aniimoData }}</pre> -->
   <table class="table table-hover">
     <thead>
       <tr>

@@ -37,6 +37,7 @@
 }
 
 @source inline('{bg,text}-element-{holy,fire,ice,dark,electric,grass,water,rock,wind}');
+@source inline('{bg,text}-ability-{1..13..1}');
 @theme {
   --color-element-holy: oklch(0.79 0.15 71.27 / 1);
   --color-element-fire: oklch(0.65 0.16 22.61 / 1);
@@ -47,7 +48,22 @@
   --color-element-water: oklch(0.68 0.13 250.11 / 1);
   --color-element-rock: oklch(0.74 0.07 83.34 / 1);
   --color-element-wind: oklch(0.48 0.18 264.93 / 1);
+
   --color-aniimo-dark: oklch(0.46 0.05 284.43 / 1);
+
+  --color-ability-1: oklch(0.62 0.12 263.47 / 1); /* Carry */
+  --color-ability-2: oklch(0.71 0.14 5.27 / 1); /* Leisure */
+  --color-ability-3: var(--color-element-wind); /* Wind */
+  --color-ability-4: oklch(0.7 0.14 137.66 / 1); /* Artisanship */
+  --color-ability-5: var(--color-element-fire); /* Fire */
+  --color-ability-6: oklch(0.68 0.15 310.82 / 1); /* Perfumery */
+  --color-ability-7: var(--color-element-grass); /* Grass */
+  --color-ability-8: var(--color-element-water); /* Water */
+  --color-ability-9: var(--color-element-rock); /* Earth */
+  --color-ability-10: oklch(0.82 0.16 97.48 / 1); /* Lightning */
+  --color-ability-11: var(--color-element-ice); /* Ice */
+  --color-ability-12: var(--color-element-dark); /* Dark */
+  --color-ability-13: var(--color-element-holy); /* Light */
 }
 
 html,

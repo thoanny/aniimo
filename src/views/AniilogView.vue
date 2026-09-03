@@ -4,9 +4,10 @@
       <AniimoFormsFilterComponent />
       <AniimoElementsFilterComponent />
       <AniimoRolesFilterComponent />
+      <AniimoHomelandAbilityFilterComponent />
       <button
         class="btn btn-sm md:btn-square justify-start md:justify-center"
-        v-if="filters.form || filters.element || filters.role"
+        v-if="filters.form || filters.element || filters.role || filters.homelandAbility"
         @click="resetFilters"
       >
         <IconX class="size-4" />
@@ -78,6 +79,26 @@
             class="w-full h-full object-cover object-bottom pb-12 z-20 absolute opacity-25"
             v-else
           />
+          <div class="flex flex-col gap-1 bottom-14 left-2 absolute w-8 z-20">
+            <AniimoHomelandAbilityComponent
+              v-for="ability in aniimo.fields.HomelandAbilities"
+              :key="ability.id"
+              :ability-id="ability.id"
+            />
+          </div>
+          <div class="flex flex-col gap-1 bottom-14 right-2 absolute w-8 z-20">
+            <!--  -->
+            <AniimoElementComponent
+              v-for="element in aniimo.fields.Elements"
+              :key="element.id"
+              :element-id="element.id"
+            />
+            <AniimoRoleComponent
+              v-for="role in aniimo.fields.Roles"
+              :key="role.id"
+              :role-id="role.id"
+            />
+          </div>
           <div
             class="bg-base-100 text-base-content flex w-full px-4 py-2 text-base font-bold bottom-0 absolute left-0 justify-center flex flex-col items-center leading-4 z-20"
             :class="{
@@ -92,18 +113,6 @@
 
             <span class="font-normal text-xs">{{ aniimo.fields.Form.fields.Title }} Form</span>
           </div>
-          <div class="flex flex-col gap-1 bottom-14 right-2 absolute w-8 z-20">
-            <AniimoElementComponent
-              v-for="element in aniimo.fields.Elements"
-              :key="element.id"
-              :element-id="element.id"
-            />
-            <AniimoRoleComponent
-              v-for="role in aniimo.fields.Roles"
-              :key="role.id"
-              :role-id="role.id"
-            />
-          </div>
         </div>
       </div>
     </div>
@@ -115,6 +124,8 @@ import AniimoBackgroundComponent from '@/components/AniimoBackgroundComponent.vu
 import AniimoElementComponent from '@/components/AniimoElementComponent.vue';
 import AniimoElementsFilterComponent from '@/components/AniimoElementsFilterComponent.vue';
 import AniimoFormsFilterComponent from '@/components/AniimoFormsFilterComponent.vue';
+import AniimoHomelandAbilityComponent from '@/components/AniimoHomelandAbilityComponent.vue';
+import AniimoHomelandAbilityFilterComponent from '@/components/AniimoHomelandAbilityFilterComponent.vue';
 import AniimoRoleComponent from '@/components/AniimoRoleComponent.vue';
 import AniimoRolesFilterComponent from '@/components/AniimoRolesFilterComponent.vue';
 import AniimoSettingsModalComponent from '@/components/AniimoSettingsModalComponent.vue';

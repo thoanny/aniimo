@@ -1,14 +1,22 @@
+import aniimoHomelandAbilities from '@/data/aniimo-homeland-abilities.json';
 import aniimoData from '@/data/aniimo.json';
 import elementsData from '@/data/elements.json';
 import formsData from '@/data/forms.json';
+import homelandAbilities from '@/data/homeland-abilities.json';
 import rolesData from '@/data/roles.json';
 import { defineStore } from 'pinia';
+
+const aniimoHomelandAbilitiesTable = aniimoHomelandAbilities.map((aniimoHomelandAbility) => ({
+  aniimoHomelandAbilityId: aniimoHomelandAbility.id,
+  homelandAbilityId: aniimoHomelandAbility.fields.HomelandAbility.id,
+}));
 
 type Filters = {
   form: undefined | number;
   element: undefined | number;
   role: undefined | number;
   caught: undefined | number;
+  homelandAbility: undefined | number;
 };
 
 const defaultFilters: Filters = {
@@ -16,6 +24,7 @@ const defaultFilters: Filters = {
   element: undefined,
   role: undefined,
   caught: undefined,
+  homelandAbility: undefined,
 };
 
 export const useAniilogStore = defineStore('aniilog', {
@@ -54,6 +63,17 @@ export const useAniilogStore = defineStore('aniilog', {
           return aniimo.fields.Roles.map((role) => role.id).indexOf(state.filters.role) >= 0;
         })
         .filter((aniimo) => {
+          if (!state.filters.homelandAbility) {
+            return true;
+          }
+
+          const ids = aniimoHomelandAbilitiesTable
+            .filter((table) => table.homelandAbilityId === state.filters.homelandAbility)
+            .map((ability) => ability.aniimoHomelandAbilityId);
+
+          return aniimo.fields.HomelandAbilities.some((ability) => ids.includes(ability.id));
+        })
+        .filter((aniimo) => {
           if (!state.filters.caught) {
             return true;
           }
@@ -78,6 +98,14 @@ export const useAniilogStore = defineStore('aniilog', {
     roleSelected: (state) => {
       return rolesData.find((role) => role.id === state.filters.role);
     },
+    homelandAbilitiesFiltered: () => {
+      return homelandAbilities;
+    },
+    homelandAbilitySelected: (state) => {
+      return homelandAbilities.find(
+        (homelandAbility) => homelandAbility.id === state.filters.homelandAbility,
+      );
+    },
   },
   actions: {
     toggleCaught(aniimoId: number) {
@@ -95,6 +123,7 @@ export const useAniilogStore = defineStore('aniilog', {
       this.filters.form = undefined;
       this.filters.element = undefined;
       this.filters.role = undefined;
+      this.filters.homelandAbility = undefined;
     },
     resetStoreState() {
       this.aniimo = [];
