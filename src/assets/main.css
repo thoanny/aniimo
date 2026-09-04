@@ -1,6 +1,7 @@
 @import 'tailwindcss';
-@plugin "daisyui";
+@custom-variant hover (&:hover);
 
+@plugin "daisyui";
 @plugin "daisyui/theme" {
   name: 'aniimo';
   default: true;

@@ -16,7 +16,7 @@
           <span
             v-for="ability in aniilogStore.homelandAbilitiesTotals"
             :key="ability.id"
-            class="badge pl-1 pr-2 w-full"
+            class="badge pl-1 pr-2 w-full gap-1"
             :class="`bg-ability-${ability?.id}`"
             :style="{
               '--badge-color': `var(--color-ability-${ability?.id})`,
@@ -56,7 +56,7 @@
               </td>
               <td>
                 <div class="flex gap-1">
-                  <AniimoHomelandAbilityComponent
+                  <AniimoHomelandAbilityBadge
                     v-for="ability in aniimo.fields.HomelandAbilities"
                     :key="ability.id"
                     :ability-id="ability.id"
@@ -89,11 +89,11 @@
 </template>
 
 <script setup lang="ts">
+import AniimoHomelandAbilityBadge from '@/components/aniimo/AniimoHomelandAbilityBadge.vue';
 import { useAniilogStore } from '@/stores/aniilog';
 import { getAniimoImageUrl } from '@/utils/image.ts';
 import { IconHome, IconHomeMinus } from '@tabler/icons-vue';
 import { ref } from 'vue';
-import AniimoHomelandAbilityComponent from './AniimoHomelandAbilityComponent.vue';
 
 const modal = ref();
 const aniilogStore = useAniilogStore();
