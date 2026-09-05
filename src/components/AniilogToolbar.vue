@@ -24,17 +24,55 @@
         </label>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-row flex-wrap gap-2">
-        <AniimoFormsFilter />
-        <AniimoElementsFilter />
-        <AniimoRolesFilter />
-        <AniimoHomelandAbilityFilter />
+        <AniimoFormsFilter
+          class="sm:block"
+          :class="{
+            hidden: hideFilters,
+          }"
+        />
+        <AniimoElementsFilter
+          class="sm:block"
+          :class="{
+            hidden: hideFilters,
+          }"
+        />
+        <AniimoRolesFilter
+          class="sm:block"
+          :class="{
+            hidden: hideFilters,
+          }"
+        />
+        <AniimoHomelandAbilityFilter
+          class="sm:block"
+          :class="{
+            hidden: hideFilters,
+          }"
+        />
         <button
-          class="btn btn-neutral lg:btn-square"
+          class="btn btn-neutral lg:btn-square sm:flex"
+          :class="{
+            hidden: hideFilters,
+          }"
           :disabled="!filters.form && !filters.element && !filters.role && !filters.homelandAbility"
           @click="resetFilters"
         >
           <IconX class="size-4" />
           <span class="lg:hidden">Réinitialiser les filtre</span>
+        </button>
+        <button
+          class="btn btn-ghost btn-sm flex sm:hidden"
+          style="--btn-bg: transparent"
+          @click="
+            () => {
+              hideFilters = !hideFilters;
+            }
+          "
+        >
+          <IconChevronDown class="size-5" v-if="hideFilters" />
+          <IconChevronUp class="size-5" v-else />
+          {{ hideFilters ? 'Afficher' : 'Masquer' }} les filtres
+          <IconChevronDown class="size-5" v-if="hideFilters" />
+          <IconChevronUp class="size-5" v-else />
         </button>
         <AniimoSettingsModal />
       </div>
@@ -68,11 +106,21 @@ import AniimoHomelandModal from '@/components/toolbar/AniimoHomelandModal.vue';
 import AniimoRolesFilter from '@/components/toolbar/AniimoRolesFilter.vue';
 import AniimoSettingsModal from '@/components/toolbar/AniimoSettingsModal.vue';
 import { useAniilogStore } from '@/stores/aniilog';
-import { IconEye, IconSearch, IconSquareArrowDown, IconX } from '@tabler/icons-vue';
+import {
+  IconChevronDown,
+  IconChevronUp,
+  IconEye,
+  IconSearch,
+  IconSquareArrowDown,
+  IconX,
+} from '@tabler/icons-vue';
 import { storeToRefs } from 'pinia';
+import { ref } from 'vue';
 
 const aniilogStore = useAniilogStore();
 const { resetFilters } = aniilogStore;
 const { filters, aniimoFiltered, aniimoTotal, aniimoCaughtTotal, searchQuery } =
   storeToRefs(aniilogStore);
+
+const hideFilters = ref<boolean>(true);
 </script>
