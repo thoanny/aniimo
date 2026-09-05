@@ -1,13 +1,13 @@
 <template>
   <div>
     <div
-      class="group w-full h-full aspect-[210/390] rounded-box border-2 border-base-100 relative shadow-lg hover:shadow-xl overflow-hidden transition-all cursor-pointer outline-offset-2"
+      class="group w-full h-full aspect-[210/390] rounded-box border-2 border-base-100 relative shadow-lg hover:shadow-xl overflow-hidden transition-all outline-offset-2"
       :class="{
         'border-green-300': aniimo.caught,
       }"
     >
       <div
-        class="hidden group-hover:flex group-active:flex group-hover:flex absolute top-0 left-0 bg-base-100/80 w-full h-full z-40 flex-col items-center justify-center gap-2 p-4"
+        class="transition-all ease-in-out flex absolute top-0 left-0 bg-base-100/80 w-full h-full z-40 flex-col items-center justify-center gap-2 p-4 translate-y-full group-hover:translate-none opacity-0 group-hover:opacity-100"
       >
         <button class="btn btn-neutral" @click="toggleCaught(aniimo.id)">
           <IconSquareRoundedCheck class="size-6" v-if="aniimo.caught" />
