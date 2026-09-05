@@ -1,6 +1,25 @@
 <script setup lang="ts">
-import { IconExternalLink } from '@tabler/icons-vue';
-import AniimoFansiteLogo from './assets/AniimoFansiteLogo.vue';
+import AniimoFansiteLogo from '@/assets/AniimoFansiteLogo.vue';
+import { IconArrowBigUpFilled, IconExternalLink } from '@tabler/icons-vue';
+import { onMounted, onUnmounted, ref } from 'vue';
+
+const isScrolled = ref<boolean>(false);
+
+const scrollToTop = () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+const handleScroll = () => {
+  isScrolled.value = window.scrollY > 800;
+};
+
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll);
+});
 </script>
 
 <template>
@@ -33,6 +52,13 @@ import AniimoFansiteLogo from './assets/AniimoFansiteLogo.vue';
 
   <main class="container mx-auto">
     <RouterView />
+    <button
+      class="btn btn-neutral btn-square fixed bottom-3 right-3 z-999"
+      @click="scrollToTop"
+      v-show="isScrolled"
+    >
+      <IconArrowBigUpFilled class="size-5" />
+    </button>
   </main>
   <footer class="container mx-auto py-6 text-sm text-center">
     Tous les logos, marques et images de ce site sont la propriété de Pawprint Interactive
@@ -43,5 +69,3 @@ import AniimoFansiteLogo from './assets/AniimoFansiteLogo.vue';
     >
   </footer>
 </template>
-
-<style scoped></style>
