@@ -5,6 +5,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 const routes = [
   { path: '/', component: AniilogView },
   { path: '/database', component: DatabaseView },
+  { path: '/t-potes', component: () => import('@/views/TpotesView.vue') },
 ];
 
 const router = createRouter({
