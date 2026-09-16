@@ -87,9 +87,7 @@
           <IconGenderFemale class="size-4" v-else-if="aniimo.fields.Gender === 'Female'"
         /></span>
 
-        <span class="font-normal text-xs line-clamp-1"
-          >{{ aniimo.fields.Form.fields.Title }} ({{ aniimo.id }})</span
-        >
+        <span class="font-normal text-xs line-clamp-1">{{ aniimo.fields.Form.fields.Title }}</span>
       </div>
     </div>
   </div>
