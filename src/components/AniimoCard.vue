@@ -37,7 +37,12 @@
           'bg-green-300 text-green-900': aniimo.caught,
         }"
       >
-        N°{{ aniimo.fields.Number.toString().padStart(3, '0') }}
+        <template v-if="aniimo.fields.Number > 0"
+          >N°{{ aniimo.fields.Number.toString().padStart(3, '0') }}</template
+        >
+        <template v-else>
+          <IconAlertTriangleFilled class="size-5 text-error" />
+        </template>
       </div>
 
       <IconHomeFilled class="absolute top-1 right-1 z-30 size-5" v-if="aniimo.homeland" />
@@ -83,7 +88,7 @@
         /></span>
 
         <span class="font-normal text-xs line-clamp-1"
-          >{{ aniimo.fields.Form.fields.Title }} Form</span
+          >{{ aniimo.fields.Form.fields.Title }} ({{ aniimo.id }})</span
         >
       </div>
     </div>
@@ -98,6 +103,7 @@ import AniimoRoleIcon from '@/components/aniimo/AniimoRoleIcon.vue';
 import { useAniilogStore } from '@/stores/aniilog';
 import { getAniimoImageUrl } from '@/utils/image';
 import {
+  IconAlertTriangleFilled,
   IconGenderFemale,
   IconGenderMale,
   IconHomeFilled,

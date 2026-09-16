@@ -15,7 +15,7 @@ const props = defineProps<{
 }>();
 
 const element = elements.find((element) => element.id === props.elementId);
-const elementClss = element?.fields.Title.toLowerCase();
+const elementClss = element?.id;
 </script>
 
 <style scoped>

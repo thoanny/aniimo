@@ -18,6 +18,7 @@ type Filters = {
   element: undefined | number;
   role: undefined | number;
   caught: undefined | number;
+  unavailable: undefined | number;
   homelandAbility: undefined | number;
 };
 
@@ -26,6 +27,7 @@ const defaultFilters: Filters = {
   element: undefined,
   role: undefined,
   caught: undefined,
+  unavailable: undefined,
   homelandAbility: undefined,
 };
 
@@ -86,6 +88,12 @@ export const useAniilogStore = defineStore('aniilog', {
             return true;
           }
           return aniimo.caught !== true;
+        })
+        .filter((aniimo) => {
+          if (!state.filters.unavailable) {
+            return true;
+          }
+          return aniimo.fields.Number > 0;
         });
 
       if (!state.searchQuery) {

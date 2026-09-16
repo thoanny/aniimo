@@ -10,7 +10,7 @@
           v-if="elementSelected?.fields.Icon"
           v-html="elementSelected.fields.Icon"
           class="size-5 shrink-0"
-          :class="`text-element-${elementSelected?.fields.Title.toLowerCase()}`"
+          :class="`text-element-${elementSelected?.id}`"
         ></div>
         {{ elementSelected ? elementSelected.fields.Title : '-- Éléments --' }}
       </span>
@@ -57,11 +57,7 @@
             v-if="element.fields.Icon"
             v-html="element.fields.Icon"
             class="size-5"
-            :class="
-              element.id === elementSelected?.id
-                ? ''
-                : `text-element-${element.fields.Title.toLowerCase()}`
-            "
+            :class="element.id === elementSelected?.id ? '' : `text-element-${element.id}`"
           ></div>
           {{ element.fields.Title }}
         </a>

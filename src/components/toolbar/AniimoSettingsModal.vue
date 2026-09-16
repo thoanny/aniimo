@@ -14,6 +14,16 @@
           <input type="checkbox" class="toggle toggle-sm toggle-success" v-model="filters.caught" />
           <span class="text-sm">Masquer les aniimo capturés</span>
         </label>
+        <label class="flex gap-2 items-center">
+          <input
+            type="checkbox"
+            class="toggle toggle-sm toggle-success"
+            v-model="filters.unavailable"
+          />
+          <span class="text-sm"
+            >Masquer les aniimo indisponibles <IconAlertTriangleFilled class="size-4 inline-flex"
+          /></span>
+        </label>
         <div class="divider divider-error mb-0">
           <IconAlertHexagonFilled class="size-6 shrink-0 text-error" />
         </div>
@@ -30,7 +40,7 @@
 
 <script setup lang="ts">
 import { useAniilogStore } from '@/stores/aniilog';
-import { IconAlertHexagonFilled, IconSettings } from '@tabler/icons-vue';
+import { IconAlertHexagonFilled, IconAlertTriangleFilled, IconSettings } from '@tabler/icons-vue';
 import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
 
