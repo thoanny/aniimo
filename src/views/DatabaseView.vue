@@ -39,7 +39,7 @@
         <td>
           {{ aniimo.fields.Roles.map((role) => `[${role.id}] ${role.fields.Title}`).join(', ') }}
         </td>
-        <td>{{ aniimo.fields.Stages.map((stage) => stage.fields.Title).join(', ') }}</td>
+        <td>&nbsp;</td>
       </tr>
     </tbody>
   </table>
