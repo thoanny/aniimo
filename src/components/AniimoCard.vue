@@ -81,12 +81,9 @@
           'bg-green-300 text-green-900': aniimo.caught,
         }"
       >
-        <span class="inline-flex items-center"
-          >{{ aniimo.fields.Title }}
-          <IconGenderMale class="size-4" v-if="aniimo.fields.Gender === 'Male'" />
-          <IconGenderFemale class="size-4" v-else-if="aniimo.fields.Gender === 'Female'"
-        /></span>
-
+        <span class="inline-flex items-center">
+          {{ aniimo.fields.Title }}
+        </span>
         <span class="font-normal text-xs line-clamp-1">{{ aniimo.fields.Form.fields.Title }}</span>
       </div>
     </div>
@@ -102,8 +99,6 @@ import { useAniilogStore } from '@/stores/aniilog';
 import { getAniimoImageUrl } from '@/utils/image';
 import {
   IconAlertTriangleFilled,
-  IconGenderFemale,
-  IconGenderMale,
   IconHomeFilled,
   IconSquareRounded,
   IconSquareRoundedCheck,

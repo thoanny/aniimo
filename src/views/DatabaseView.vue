@@ -7,7 +7,6 @@
         <th>id</th>
         <th>Title</th>
         <th>Number</th>
-        <th>Gender</th>
         <th>Image</th>
         <th>Form</th>
         <th>Elements</th>
@@ -20,7 +19,6 @@
         <td>{{ aniimo.id }}</td>
         <td>{{ aniimo.fields.Title }}</td>
         <td>{{ aniimo.fields.Number.toString().padStart(3, '0') }}</td>
-        <td>{{ aniimo.fields.Gender }}</td>
         <td>
           <img
             :src="getImageUrl(aniimo.fields.Image[0]?.path)"
