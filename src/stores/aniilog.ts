@@ -138,7 +138,7 @@ export const useAniilogStore = defineStore('aniilog', {
       return rolesData.find((role) => role.id === state.filters.role);
     },
     homelandAbilitiesFiltered: () => {
-      return homelandAbilities;
+      return homelandAbilities.sort((a, b) => a.fields.Title.localeCompare(b.fields.Title));
     },
     homelandAbilitySelected: (state) => {
       return homelandAbilities.find(
