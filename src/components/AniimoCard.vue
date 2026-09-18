@@ -1,23 +1,25 @@
 <template>
   <div>
     <div
-      class="group w-full h-full aspect-[210/390] rounded-box border-2 border-base-100 relative shadow-lg hover:shadow-xl overflow-hidden transition-all outline-offset-2"
+      class="select-none w-full h-full aspect-[210/390] rounded-box border-2 border-base-100 relative shadow-lg hover:shadow-xl overflow-hidden transition-all outline-offset-2"
       :class="{
         'border-green-300': aniimo.caught,
       }"
     >
-      <div
-        class="transition-all ease-in-out flex absolute top-0 left-0 bg-base-100/80 w-full h-full z-40 flex-col items-center justify-center gap-2 p-4 translate-y-full group-hover:translate-none opacity-0 group-hover:opacity-100"
-      >
-        <button class="btn btn-neutral" @click="toggleCaught(aniimo.id)">
-          <IconSquareRoundedCheck class="size-6" v-if="aniimo.caught" />
-          <IconSquareRounded class="size-6" v-else />
-          Capturé
+      <div class="absolute top-2 right-2 z-40 flex flex-col gap-1">
+        <button class="btn btn-sm btn-neutral btn-circle" @click="toggleCaught(aniimo.id)">
+          <IconSquareRoundedCheck class="size-5" v-if="aniimo.caught" />
+          <IconSquareRounded class="size-5" v-else />
         </button>
-        <button class="btn btn-neutral" @click="toggleHomeland(aniimo.id)">
-          <IconSquareRoundedCheck class="size-6" v-if="aniimo.homeland" />
-          <IconSquareRounded class="size-6" v-else />
-          Homeland
+        <button class="btn btn-sm btn-neutral btn-circle" @click="addToHomeland(aniimo.id)">
+          <IconHomePlus class="size-5" />
+        </button>
+        <button
+          class="btn btn-sm btn-neutral btn-circle"
+          @click="removeFromHomeland(aniimo.id)"
+          :disabled="aniimo.homelandCount <= 0"
+        >
+          <IconHomeMinus class="size-5" />
         </button>
       </div>
       <AniimoBackgroundImage
@@ -44,8 +46,6 @@
           <IconAlertTriangleFilled class="size-5 text-error" />
         </template>
       </div>
-
-      <IconHomeFilled class="absolute top-1 right-1 z-30 size-5" v-if="aniimo.homeland" />
 
       <img
         :src="getAniimoImageUrl(aniimo.fields.Image[0]?.path)"
@@ -99,7 +99,8 @@ import { useAniilogStore } from '@/stores/aniilog';
 import { getAniimoImageUrl } from '@/utils/image';
 import {
   IconAlertTriangleFilled,
-  IconHomeFilled,
+  IconHomeMinus,
+  IconHomePlus,
   IconSquareRounded,
   IconSquareRoundedCheck,
 } from '@tabler/icons-vue';
@@ -107,5 +108,5 @@ import {
 defineProps(['aniimo']);
 
 const aniilogStore = useAniilogStore();
-const { toggleCaught, toggleHomeland } = aniilogStore;
+const { toggleCaught, addToHomeland, removeFromHomeland } = aniilogStore;
 </script>

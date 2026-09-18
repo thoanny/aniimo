@@ -1,16 +1,14 @@
 <template>
   <button class="btn btn-xs btn-neutral" @click="openModal">
     <IconHome class="size-4" />
-    {{
-      aniilogStore.homeland.length > 0 ? `Homeland : ${aniilogStore.homeland.length}` : 'Homeland'
-    }}
+    {{ aniilogStore.homeland.length > 0 ? `Foyer : ${aniilogStore.homeland.length}` : 'Foyer' }}
   </button>
   <dialog ref="modal" class="modal">
     <div class="modal-box max-w-md max-h-[90dvh]">
       <form method="dialog">
         <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
       </form>
-      <h3 class="text-lg font-bold leading-none">Homeland</h3>
+      <h3 class="text-lg font-bold leading-none">Foyer</h3>
       <div class="flex flex-col gap-4 mt-4">
         <div class="grid grid-cols-7 gap-1">
           <span
@@ -31,8 +29,9 @@
           <thead>
             <tr>
               <th>Aniimo</th>
+              <th>Qt</th>
               <th>Abilités</th>
-              <th class="w-12"></th>
+              <th class="w-17"></th>
             </tr>
           </thead>
           <tbody>
@@ -54,6 +53,7 @@
                   </div>
                 </div>
               </td>
+              <td>&times;&nbsp;{{ aniimo.homelandCount }}</td>
               <td>
                 <div class="flex gap-1">
                   <AniimoHomelandAbilityBadge
@@ -64,12 +64,20 @@
                 </div>
               </td>
               <td>
-                <button
-                  class="btn btn-square btn-sm btn-error btn-outline"
-                  @click="toggleHomeland(aniimo.id)"
-                >
-                  <IconHomeMinus class="size-5" />
-                </button>
+                <div class="flex gap-1">
+                  <button
+                    class="btn btn-square btn-xs btn-success btn-outline"
+                    @click="addToHomeland(aniimo.id)"
+                  >
+                    <IconHomePlus class="size-4" />
+                  </button>
+                  <button
+                    class="btn btn-square btn-xs btn-error btn-outline"
+                    @click="removeFromHomeland(aniimo.id)"
+                  >
+                    <IconHomeMinus class="size-4" />
+                  </button>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -92,12 +100,12 @@
 import AniimoHomelandAbilityBadge from '@/components/aniimo/AniimoHomelandAbilityBadge.vue';
 import { useAniilogStore } from '@/stores/aniilog';
 import { getAniimoImageUrl } from '@/utils/image.ts';
-import { IconHome, IconHomeMinus } from '@tabler/icons-vue';
+import { IconHome, IconHomeMinus, IconHomePlus } from '@tabler/icons-vue';
 import { ref } from 'vue';
 
 const modal = ref();
 const aniilogStore = useAniilogStore();
-const { toggleHomeland } = aniilogStore;
+const { addToHomeland, removeFromHomeland } = aniilogStore;
 
 const openModal = () => {
   modal.value.showModal();

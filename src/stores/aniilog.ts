@@ -51,6 +51,7 @@ export const useAniilogStore = defineStore('aniilog', {
           ...aniimo,
           caught: state.aniimo.indexOf(aniimo.id) >= 0,
           homeland: state.homeland.indexOf(aniimo.id) >= 0,
+          homelandCount: state.homeland.filter((h) => h === aniimo.id)?.length,
         }))
         .filter((aniimo) => {
           if (!state.filters.form) {
@@ -111,7 +112,12 @@ export const useAniilogStore = defineStore('aniilog', {
       }));
     },
     aniimoHomelandFiltered: (state) => {
-      return aniimoData.filter((aniimo) => state.homeland.indexOf(aniimo.id) >= 0);
+      return aniimoData
+        .filter((aniimo) => state.homeland.indexOf(aniimo.id) >= 0)
+        .map((aniimo) => ({
+          ...aniimo,
+          homelandCount: state.homeland.filter((h) => h === aniimo.id)?.length,
+        }));
     },
     formsFiltered: () => {
       return formsData.sort((a, b) => a.fields.Title.localeCompare(b.fields.Title));
@@ -191,6 +197,15 @@ export const useAniilogStore = defineStore('aniilog', {
       if (idx < 0) {
         this.homeland.push(aniimoId);
       } else {
+        this.homeland.splice(idx, 1);
+      }
+    },
+    addToHomeland(aniimoId: number) {
+      this.homeland.push(aniimoId);
+    },
+    removeFromHomeland(aniimoId: number) {
+      const idx = this.homeland.indexOf(aniimoId);
+      if (idx >= 0) {
         this.homeland.splice(idx, 1);
       }
     },
