@@ -104,6 +104,7 @@ export const useAniilogStore = defineStore('aniilog', {
       const fuse = new Fuse(aniimo, {
         keys: ['fields.Title'],
         ignoreDiacritics: true,
+        threshold: 0.25,
       });
 
       return fuse.search(state.searchQuery).map(({ item, score }) => ({
