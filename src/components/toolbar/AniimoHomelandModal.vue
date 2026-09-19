@@ -30,7 +30,7 @@
             <tr>
               <th>Aniimo</th>
               <th>Qt</th>
-              <th>Abilités</th>
+              <th>Capacités</th>
               <th class="w-17"></th>
             </tr>
           </thead>

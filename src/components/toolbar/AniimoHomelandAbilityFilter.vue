@@ -12,7 +12,7 @@
           class="size-5 shrink-0"
           :class="`text-ability-${homelandAbilitySelected?.id}`"
         ></div>
-        {{ homelandAbilitySelected ? homelandAbilitySelected.fields.Title : '-- Abilités --' }}
+        {{ homelandAbilitySelected ? homelandAbilitySelected.fields.Title : '-- Capacités --' }}
       </span>
       <IconChevronUp class="size-5 shrink-0" v-if="isOpen" />
       <IconChevronDown class="size-5 shrink-0" v-else />
@@ -37,7 +37,7 @@
             'menu-active': undefined === homelandAbilitySelected?.id,
           }"
         >
-          -- Abilités --
+          -- Capacités --
         </a>
       </li>
       <li v-for="ability in homelandAbilitiesFiltered" :key="ability.id">
