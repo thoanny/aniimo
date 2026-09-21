@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import AniimoFansiteLogo from '@/assets/AniimoFansiteLogo.vue';
-import { IconArrowBigUpFilled, IconExternalLink, IconFlame } from '@tabler/icons-vue';
+import {
+  IconArrowBigUpFilled,
+  IconCalendarWeek,
+  IconExternalLink,
+  IconFlame,
+  IconNotebook,
+} from '@tabler/icons-vue';
 import { onMounted, onUnmounted, ref } from 'vue';
 
 const isScrolled = ref<boolean>(false);
@@ -34,8 +40,20 @@ onUnmounted(() => {
       <div class="flex-none">
         <ul class="menu menu-horizontal px-1">
           <li>
+            <RouterLink to="/" active-class="menu-active text-primary">
+              <IconNotebook class="size-5" stroke="1.5" />
+              Aniipédia
+            </RouterLink>
+          </li>
+          <li>
+            <RouterLink to="/events" active-class="menu-active text-primary">
+              <IconCalendarWeek class="size-5" stroke="1.5" />
+              Évènements
+            </RouterLink>
+          </li>
+          <li>
             <RouterLink to="/t-potes" active-class="menu-active text-primary">
-              <IconFlame class="size-4" />
+              <IconFlame class="size-5" stroke="1.5" />
               T-potes
             </RouterLink>
           </li>

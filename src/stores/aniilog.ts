@@ -5,7 +5,12 @@ import formsData from '@/data/forms.json';
 import homelandAbilities from '@/data/homeland-abilities.json';
 import rolesData from '@/data/roles.json';
 import Fuse from 'fuse.js/basic';
+import {
+  compressToEncodedURIComponent as pack,
+  decompressFromEncodedURIComponent as unpack,
+} from 'lz-string';
 import { defineStore } from 'pinia';
+import QRCode from 'qrcode';
 
 const aniimoHomelandAbilitiesTable = aniimoHomelandAbilities.map((aniimoHomelandAbility) => ({
   aniimoHomelandAbilityId: aniimoHomelandAbility.id,
@@ -37,6 +42,7 @@ export const useAniilogStore = defineStore('aniilog', {
     homeland: <number[]>[],
     filters: { ...defaultFilters },
     searchQuery: <string>'',
+    qrcode: <string>'',
   }),
   getters: {
     aniimoTotal: (): number => {
@@ -169,6 +175,12 @@ export const useAniilogStore = defineStore('aniilog', {
         return { id, icon: homelandAbility?.fields.Icon, total };
       });
     },
+    exportCodeLink: (state) => {
+      // http://localhost:5173/?save=N4IghiBcDaCMsBoBsCBMBmAnAgHA2ALPgKz4pGkDsC2sADPguvs+g6tgQwcwagLoIQACyhxGiIkUQyJc2ZP4BfIA
+      const code = pack(JSON.stringify({ a: state.aniimo, h: state.homeland }));
+      const link = `${location.origin}/?save=${code}`;
+      return link;
+    },
   },
   actions: {
     toggleCaught(aniimoId: number) {
@@ -208,6 +220,32 @@ export const useAniilogStore = defineStore('aniilog', {
       const idx = this.homeland.indexOf(aniimoId);
       if (idx >= 0) {
         this.homeland.splice(idx, 1);
+      }
+    },
+    importAniilogFromUrl() {
+      const params = new URLSearchParams(document.location.search);
+      const save = params.get('save');
+
+      if (!save) return;
+
+      const data = JSON.parse(unpack(save));
+      if (data.a) {
+        this.aniimo = data.a;
+      }
+      if (data.h) {
+        this.homeland = data.h;
+      }
+      return history.replaceState(null, '', '/');
+    },
+    async generateQRCode() {
+      try {
+        this.qrcode = await QRCode.toDataURL(this.exportCodeLink, {
+          errorCorrectionLevel: 'L',
+          margin: 1,
+          width: 272,
+        });
+      } catch {
+        this.qrcode = '';
       }
     },
   },

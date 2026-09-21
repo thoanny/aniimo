@@ -14,7 +14,13 @@ import AniilogToolbar from '@/components/AniilogToolbar.vue';
 import AniimoCard from '@/components/AniimoCard.vue';
 import { useAniilogStore } from '@/stores/aniilog';
 import { storeToRefs } from 'pinia';
+import { onMounted } from 'vue';
 
 const aniilogStore = useAniilogStore();
+const { importAniilogFromUrl } = aniilogStore;
 const { aniimoFiltered } = storeToRefs(aniilogStore);
+
+onMounted(() => {
+  importAniilogFromUrl();
+});
 </script>

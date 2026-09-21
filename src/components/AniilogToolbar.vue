@@ -74,6 +74,7 @@
           <IconChevronDown class="size-5" v-if="hideFilters" />
           <IconChevronUp class="size-5" v-else />
         </button>
+        <AniimoExportModal />
         <AniimoSettingsModal />
       </div>
     </div>
@@ -100,6 +101,7 @@
 
 <script setup lang="ts">
 import AniimoElementsFilter from '@/components/toolbar/AniimoElementsFilter.vue';
+import AniimoExportModal from '@/components/toolbar/AniimoExportModal.vue';
 import AniimoFormsFilter from '@/components/toolbar/AniimoFormsFilter.vue';
 import AniimoHomelandAbilityFilter from '@/components/toolbar/AniimoHomelandAbilityFilter.vue';
 import AniimoHomelandModal from '@/components/toolbar/AniimoHomelandModal.vue';

@@ -8,7 +8,10 @@
       <form method="dialog">
         <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
       </form>
-      <h3 class="text-lg font-bold leading-none">Paramètres</h3>
+      <h3 class="text-lg font-bold leading-none flex gap-2 items-center">
+        <IconSettings />
+        Paramètres
+      </h3>
       <div class="flex flex-col gap-4 mt-4">
         <label class="flex gap-2 items-center">
           <input type="checkbox" class="toggle toggle-sm toggle-success" v-model="filters.caught" />

@@ -1,18 +1,20 @@
 <template>
   <div>
     <button
-      class="btn w-full lg:w-46"
+      class="btn w-full lg:w-40 xl:w-46"
       :popovertarget="`popover-${key}`"
       :style="`anchor-name: --anchor-${key}`"
     >
       <span class="grow flex items-center gap-2">
-        {{ formSelected ? `${formSelected.fields.Title}` : '-- Formes --' }}
+        <span class="line-clamp-1">
+          {{ formSelected ? `${formSelected.fields.Title}` : '-- Formes --' }}
+        </span>
       </span>
       <IconChevronUp class="size-5 shrink-0" v-if="isOpen" />
       <IconChevronDown class="size-5 shrink-0" v-else />
     </button>
     <ul
-      class="dropdown menu bg-base-100 rounded-box z-40 shadow-sm mt-1 w-46 max-h-[75dvh]"
+      class="dropdown menu bg-base-100 rounded-box z-40 shadow-sm mt-1 w-44 max-h-[75dvh]"
       popover
       :id="`popover-${key}`"
       :style="`position-anchor: --anchor-${key}`"

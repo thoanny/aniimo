@@ -1,7 +1,7 @@
 <template>
   <div>
     <button
-      class="btn w-full lg:w-40"
+      class="btn w-full lg:w-38"
       :popovertarget="`popover-${key}`"
       :style="`anchor-name: --anchor-${key}`"
     >

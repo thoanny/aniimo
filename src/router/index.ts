@@ -6,6 +6,7 @@ const routes = [
   { path: '/', component: AniilogView },
   { path: '/database', component: DatabaseView },
   { path: '/t-potes', component: () => import('@/views/TpotesView.vue') },
+  { path: '/events', component: () => import('@/views/EventsView.vue') },
 ];
 
 const router = createRouter({
