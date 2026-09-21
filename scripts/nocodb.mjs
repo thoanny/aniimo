@@ -31,6 +31,10 @@ const endpoints = {
     path: './src/data/aniimo-homeland-abilities.json',
     url: `${NOCODB_URL}/mpgwdbkvtsaycx7/records?pageSize=9999&viewId=vwjocit65zq8kfww`,
   },
+  events: {
+    path: './src/data/events.json',
+    url: `${NOCODB_URL}/m3n0lri1b6dahdj/records?pageSize=9999&viewId=vwnsue7wtzaaug2o`,
+  },
 };
 
 Object.keys(endpoints).forEach((endpoint) => {
