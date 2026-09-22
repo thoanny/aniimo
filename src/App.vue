@@ -42,7 +42,7 @@ onUnmounted(() => {
           <li>
             <RouterLink to="/" active-class="menu-active text-primary">
               <IconNotebook class="size-5" stroke="1.5" />
-              <span class="hidden md:inline">Aniipédia</span>
+              <span class="hidden md:inline">Aniimopédia</span>
             </RouterLink>
           </li>
           <li>
