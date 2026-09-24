@@ -1,12 +1,7 @@
 <script setup lang="ts">
 import AniimoFansiteLogo from '@/assets/AniimoFansiteLogo.vue';
-import {
-  IconArrowBigUpFilled,
-  IconCalendarWeek,
-  IconExternalLink,
-  IconFlame,
-  IconNotebook,
-} from '@tabler/icons-vue';
+import AppMenu from '@/components/AppMenu.vue';
+import { IconArrowBigUpFilled } from '@tabler/icons-vue';
 import { onMounted, onUnmounted, ref } from 'vue';
 
 const isScrolled = ref<boolean>(false);
@@ -30,46 +25,17 @@ onUnmounted(() => {
 
 <template>
   <header class="mb-6">
-    <div class="navbar bg-neutral text-neutral-content shadow-sm">
-      <div class="flex-1">
-        <RouterLink to="/" class="inline-flex gap-1 px-2 text-xl items-center">
+    <div class="navbar bg-neutral shadow-sm justify-between">
+      <div class="text-neutral-content">
+        <RouterLink to="/" class="flex gap-1 px-2 text-lg items-end">
           <AniimoFansiteLogo class="size-8" />
-          <span class="hidden sm:block">Aniimo | Fansite</span>
+          <span class="leading-3.5 font-semibold"
+            >Aniimo<br /><small class="text-xs font-normal">Fansite</small></span
+          >
         </RouterLink>
       </div>
-      <div class="flex-none">
-        <ul class="menu menu-horizontal px-1">
-          <li>
-            <RouterLink to="/" active-class="menu-active text-primary">
-              <IconNotebook class="size-5" stroke="1.5" />
-              <span class="hidden md:inline">Aniimopédia</span>
-            </RouterLink>
-          </li>
-          <li>
-            <RouterLink to="/events" active-class="menu-active text-primary">
-              <IconCalendarWeek class="size-5" stroke="1.5" />
-              <span class="hidden md:inline">Évènements</span>
-            </RouterLink>
-          </li>
-          <li>
-            <RouterLink to="/t-potes" active-class="menu-active text-primary">
-              <IconFlame class="size-5" stroke="1.5" />
-              <span class="hidden md:inline">T-potes</span>
-            </RouterLink>
-          </li>
-          <li>
-            <a href="https://www.aniimo.com/fr/main" target="_blank" rel="nofollow">
-              Site officiel
-              <IconExternalLink class="size-4" />
-            </a>
-          </li>
-          <li>
-            <a href="https://wiki.aniimo.com" target="_blank" rel="nofollow">
-              Wiki
-              <IconExternalLink class="size-4" />
-            </a>
-          </li>
-        </ul>
+      <div>
+        <AppMenu />
       </div>
     </div>
   </header>
