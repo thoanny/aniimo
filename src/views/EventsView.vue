@@ -27,6 +27,8 @@ const filteredEvents = computed(() => {
     end: dayIndex(e.fields.EndDate) + 1,
     row: e.fields.Row + 1,
     description: e.fields.Description ? md.render(e.fields.Description) : null,
+    isCurrent: isCurrent(e.fields.StartDate, e.fields.EndDate),
+    isEnded: e.fields.EndDate < new Date().toLocaleDateString('sv-SE'),
   }));
 });
 
@@ -95,12 +97,12 @@ onFinishScroll(() => {
       <div
         v-for="event in filteredEvents"
         :key="event.id"
-        class="rounded-box text-sm font-bold cursor-pointer py-1 px-3 h-8 flex items-center"
+        class="rounded-box text-sm font-bold cursor-pointer py-1 px-3 h-8 flex items-center z-1"
         :style="{
           gridColumn: `${dayIndex(event.fields.StartDate)} / ${dayIndex(event.fields.EndDate)} + 1`,
           gridRow: event.row + 1,
         }"
-        :class="`col-start-${event.start} col-end-${event.end} ${isCurrent(event.fields.StartDate, event.fields.EndDate) ? 'bg-primary text-primary-content' : 'bg-neutral text-neutral-content'}`"
+        :class="`col-start-${event.start} col-end-${event.end} ${event.isCurrent ? 'bg-primary text-base-100' : 'bg-neutral text-neutral-content'} ${event.isEnded ? 'opacity-25' : ''}`"
         @click="handleEventModal(event.id)"
       >
         <span class="sticky left-2 line-clamp-1">
