@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import events from '@/data/events.json';
+import { useConveyer } from '@egjs/vue-conveyer';
 import MarkdownIt from 'markdown-it';
 import { computed, ref } from 'vue';
+
+const { ref: conveyerRef, onBeginScroll, onFinishScroll } = useConveyer({ useSideWheel: true });
+
+const scrolling = ref(false);
 
 const eventModal = ref();
 const eventSelected = ref();
@@ -32,20 +37,49 @@ const label = (d: Date) => {
 };
 
 const handleEventModal = (EventId: number) => {
+  if (scrolling.value) return;
   eventSelected.value = filteredEvents.value.find((e) => e.id === EventId);
   eventModal.value.showModal();
 };
+
+const isCurrent = (start: string, end?: string): boolean => {
+  const today = new Date().toLocaleDateString('sv-SE');
+  if (!end) {
+    if (start === today) {
+      return true;
+    }
+    return false;
+  }
+
+  if (start <= today && end >= today) {
+    return true;
+  }
+
+  return false;
+};
+
+onBeginScroll(() => {
+  scrolling.value = true;
+});
+
+onFinishScroll(() => {
+  scrolling.value = false;
+});
 </script>
 
 <template>
   <h1 class="text-2xl font-bold mb-4">Évènements</h1>
   <!-- <pre>{{ filteredEvents }}</pre> -->
-  <div class="scroller py-2 border rounded-box relative">
+  <div
+    class="scroller py-2 rounded-lg relative select-none bg-base-100 shadow-md"
+    ref="conveyerRef"
+  >
     <div class="grid absolute top-0 left-0 h-full w-full">
       <div
         v-for="(d, i) in header"
         :key="i"
-        class="placeholder w-[3rem] bg-neutral/10 z-10"
+        class="w-[3rem] z-10"
+        :class="`${isCurrent(d.toLocaleDateString('sv-SE')) ? 'bg-primary/25' : 'bg-neutral/10'}`"
         :style="{ gridColumn: i + 1, gridRow: 1 }"
       ></div>
     </div>
@@ -61,15 +95,17 @@ const handleEventModal = (EventId: number) => {
       <div
         v-for="event in filteredEvents"
         :key="event.id"
-        class="rounded-box text-sm font-bold bg-neutral text-neutral-content cursor-pointer py-1 px-3 h-8 flex items-center"
+        class="rounded-box text-sm font-bold cursor-pointer py-1 px-3 h-8 flex items-center"
         :style="{
           gridColumn: `${dayIndex(event.fields.StartDate)} / ${dayIndex(event.fields.EndDate)} + 1`,
           gridRow: event.row + 1,
         }"
-        :class="`col-start-${event.start} col-end-${event.end}`"
+        :class="`col-start-${event.start} col-end-${event.end} ${isCurrent(event.fields.StartDate, event.fields.EndDate) ? 'bg-primary text-primary-content' : 'bg-neutral text-neutral-content'}`"
         @click="handleEventModal(event.id)"
       >
-        <span class="sticky left-2 line-clamp-1">{{ event.fields.Title }}</span>
+        <span class="sticky left-2 line-clamp-1">
+          {{ event.fields.Title }}
+        </span>
       </div>
     </div>
   </div>
