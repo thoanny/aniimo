@@ -62,7 +62,7 @@ const handleMenuClick = () => {
 <template>
   <ul class="hidden md:flex menu menu-horizontal p-0 text-neutral-content">
     <li v-for="item in menuItems" :key="item.id">
-      <RouterLink :to="item.link" active-class="menu-active" v-if="!item.external">
+      <RouterLink :to="item.link" active-class="menu-active text-primary" v-if="!item.external">
         <component :is="item.icon" v-if="item.icon" class="size-5" stroke="1.5" />
         <span>{{ item.title }}</span>
       </RouterLink>
