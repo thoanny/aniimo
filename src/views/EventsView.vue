@@ -21,15 +21,17 @@ const header = Array.from({ length: days }, (_, i) => new Date(+start + i * 864e
 const filteredEvents = computed(() => {
   const md = new MarkdownIt();
 
-  return events.map((e) => ({
-    ...e,
-    start: dayIndex(e.fields.StartDate),
-    end: dayIndex(e.fields.EndDate) + 1,
-    row: e.fields.Row + 1,
-    description: e.fields.Description ? md.render(e.fields.Description) : null,
-    isCurrent: isCurrent(e.fields.StartDate, e.fields.EndDate),
-    isEnded: e.fields.EndDate < new Date().toLocaleDateString('sv-SE'),
-  }));
+  return events
+    .filter((e) => e.fields.Hide !== true)
+    .map((e) => ({
+      ...e,
+      start: dayIndex(e.fields.StartDate),
+      end: dayIndex(e.fields.EndDate) + 1,
+      row: e.fields.Row + 1,
+      description: e.fields.Description ? md.render(e.fields.Description) : null,
+      isCurrent: isCurrent(e.fields.StartDate, e.fields.EndDate),
+      isEnded: e.fields.EndDate < new Date().toLocaleDateString('sv-SE'),
+    }));
 });
 
 const dayIndex = (d: string) => toDay(d) - first + 1;
@@ -70,7 +72,7 @@ onFinishScroll(() => {
 </script>
 
 <template>
-  <h1 class="text-2xl font-bold mb-4">Évènements</h1>
+  <h1 class="text-2xl font-bold mb-4 hidden">Évènements</h1>
   <!-- <pre>{{ filteredEvents }}</pre> -->
   <div
     class="scroller py-2 rounded-lg relative select-none bg-base-100 shadow-md"
@@ -89,7 +91,7 @@ onFinishScroll(() => {
       <div
         v-for="(d, i) in header"
         :key="i"
-        class="day text-xs"
+        class="text-base-content text-center font-bold text-xs"
         :style="{ gridColumn: i + 1, gridRow: 1 }"
       >
         {{ label(d) }}
@@ -97,12 +99,21 @@ onFinishScroll(() => {
       <div
         v-for="event in filteredEvents"
         :key="event.id"
-        class="rounded-box text-sm font-bold cursor-pointer py-1 px-3 h-8 flex items-center z-1"
+        class="event rounded-xl text-sm tracking-wide font-semibold cursor-pointer py-1 px-4 h-8 flex items-center z-1 transition-all"
+        :data-color="event.fields.Color ?? 'red'"
         :style="{
           gridColumn: `${dayIndex(event.fields.StartDate)} / ${dayIndex(event.fields.EndDate)} + 1`,
           gridRow: event.row + 1,
+          '--event-color': event.fields.Color || '--color-primary',
         }"
-        :class="`col-start-${event.start} col-end-${event.end} ${event.isCurrent ? 'bg-primary text-base-100' : 'bg-neutral text-neutral-content'} ${event.isEnded ? 'opacity-25' : ''}`"
+        :class="[
+          `col-start-${event.start} col-end-${event.end}`,
+          {
+            'opacity-25': event.isEnded,
+            '!bg-neutral text-neutral-content': !event.isCurrent,
+            'text-base-100': event.isCurrent,
+          },
+        ]"
         @click="handleEventModal(event.id)"
       >
         <span class="sticky left-2 line-clamp-1">
@@ -137,8 +148,17 @@ onFinishScroll(() => {
       <div
         v-if="eventSelected.description"
         v-html="eventSelected.description"
-        class="description"
+        class="content"
       ></div>
+      <div class="modal-action" v-if="eventSelected.fields.Details">
+        <a
+          :href="eventSelected.fields.Details"
+          target="_blank"
+          rel="nofollow"
+          class="btn btn-primary btn-block"
+          >Détails de l'évènement</a
+        >
+      </div>
     </div>
     <form method="dialog" class="modal-backdrop">
       <button>close</button>
@@ -156,46 +176,11 @@ onFinishScroll(() => {
   gap: 0.5rem 0.5rem;
 }
 
-.day {
-  color: var(--color-neutral);
-  font-weight: bold;
-  text-align: center;
+.event {
+  background-color: oklch(from var(--event-color) calc(l - 0.075) c h);
 }
 
-.description :deep(ul),
-.description :deep(ol),
-.description :deep(p) {
-  margin: 1rem 0;
-}
-
-.description :deep(ul),
-.description :deep(ol) {
-  margin-left: 1.75rem;
-}
-
-.description :deep(ul) {
-  list-style-type: disc;
-}
-
-.description :deep(ol) {
-  list-style-type: decimal;
-}
-
-.description :deep(code) {
-  background: var(--color-neutral);
-  color: var(--color-neutral);
-  user-select: none;
-  padding: 0.25rem 0.75rem;
-  border-radius: calc(var(--radius-box) / 4);
-  font-size: 0.875rem;
-  transition: all ease-in-out 100ms;
-  cursor: pointer;
-  font-family: var(--font-sans);
-  font-weight: 600;
-}
-
-.description :deep(code:active) {
-  color: var(--color-neutral-content);
-  user-select: none;
+.event:hover {
+  background-color: var(--event-color);
 }
 </style>
