@@ -2,9 +2,14 @@
 import events from '@/data/events.json';
 import { useConveyer } from '@egjs/vue-conveyer';
 import MarkdownIt from 'markdown-it';
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
-const { ref: conveyerRef, onBeginScroll, onFinishScroll } = useConveyer({ useSideWheel: true });
+const {
+  ref: conveyerRef,
+  onBeginScroll,
+  onFinishScroll,
+  scrollTo,
+} = useConveyer({ useSideWheel: true });
 
 const scrolling = ref(false);
 
@@ -69,6 +74,14 @@ onBeginScroll(() => {
 onFinishScroll(() => {
   scrolling.value = false;
 });
+
+onMounted(() => {
+  const todayPosition = document.querySelector('[data-is-today=true]')?.getBoundingClientRect();
+  if (todayPosition) {
+    const target = todayPosition.x + todayPosition.width / 2 - window.innerWidth / 2;
+    scrollTo(target, target < 1000 ? target : 1000);
+  }
+});
 </script>
 
 <template>
@@ -93,6 +106,7 @@ onFinishScroll(() => {
         :key="i"
         class="text-base-content text-center font-bold text-xs"
         :style="{ gridColumn: i + 1, gridRow: 1 }"
+        :data-is-today="isCurrent(d.toLocaleDateString('sv-SE'))"
       >
         {{ label(d) }}
       </div>
