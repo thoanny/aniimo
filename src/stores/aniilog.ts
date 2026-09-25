@@ -4,6 +4,7 @@ import elementsData from '@/data/elements.json';
 import formsData from '@/data/forms.json';
 import homelandAbilities from '@/data/homeland-abilities.json';
 import rolesData from '@/data/roles.json';
+import { useToastStore } from '@/stores/toast';
 import Fuse from 'fuse.js/basic';
 import {
   compressToEncodedURIComponent as pack,
@@ -185,10 +186,17 @@ export const useAniilogStore = defineStore('aniilog', {
   actions: {
     toggleCaught(aniimoId: number) {
       const idx = this.aniimo.findIndex((id) => aniimoId === id);
+      const aniimo = aniimoData.find((aniimo) => aniimo.id === aniimoId);
       if (idx < 0) {
         this.aniimo.push(aniimoId);
+        useToastStore().addToast(
+          `${aniimo?.fields.Title} (${aniimo?.fields.Form.fields.Title}) capturé·e.`,
+        );
       } else {
         this.aniimo.splice(idx, 1);
+        useToastStore().addToast(
+          `${aniimo?.fields.Title} (${aniimo?.fields.Form.fields.Title}) relâché·e.`,
+        );
       }
     },
     setFilter(key: keyof Filters, value: number | undefined) {
@@ -205,21 +213,21 @@ export const useAniilogStore = defineStore('aniilog', {
       this.homeland = [];
       this.filters = { ...defaultFilters };
     },
-    toggleHomeland(aniimoId: number) {
-      const idx = this.homeland.indexOf(aniimoId);
-      if (idx < 0) {
-        this.homeland.push(aniimoId);
-      } else {
-        this.homeland.splice(idx, 1);
-      }
-    },
     addToHomeland(aniimoId: number) {
+      const aniimo = aniimoData.find((aniimo) => aniimo.id === aniimoId);
       this.homeland.push(aniimoId);
+      useToastStore().addToast(
+        `${aniimo?.fields.Title} (${aniimo?.fields.Form.fields.Title}) ajouté·e au foyer.`,
+      );
     },
     removeFromHomeland(aniimoId: number) {
       const idx = this.homeland.indexOf(aniimoId);
+      const aniimo = aniimoData.find((aniimo) => aniimo.id === aniimoId);
       if (idx >= 0) {
         this.homeland.splice(idx, 1);
+        useToastStore().addToast(
+          `${aniimo?.fields.Title} (${aniimo?.fields.Form.fields.Title}) retiré·e du foyer.`,
+        );
       }
     },
     importAniilogFromUrl() {

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AniimoFansiteLogo from '@/assets/AniimoFansiteLogo.vue';
 import AppMenu from '@/components/AppMenu.vue';
+import AppToast from '@/components/AppToast.vue';
 import { IconArrowBigUpFilled } from '@tabler/icons-vue';
 import { onMounted, onUnmounted, ref } from 'vue';
 
@@ -49,6 +50,7 @@ onUnmounted(() => {
     >
       <IconArrowBigUpFilled class="size-5" />
     </button>
+    <AppToast />
   </main>
   <footer class="container mx-auto py-6 text-sm text-center">
     Tous les logos, marques et images de ce site sont la propriété de Pawprint Interactive
