@@ -63,6 +63,9 @@ export const useAniilogStore = defineStore('aniilog', {
     pathfinderCard: { ...defaultPathfinderCard },
   }),
   getters: {
+    activefiltersCount: (state) => {
+      return Object.values(state.filters).filter((filter) => !!filter).length;
+    },
     statistics: (state) => {
       const caught = state.aniimo.map((aniimoId) => ({
         ...aniimoData.find((ad) => ad.id === aniimoId),
