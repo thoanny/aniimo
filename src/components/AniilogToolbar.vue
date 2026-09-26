@@ -75,6 +75,7 @@
           <IconChevronUp class="size-5" v-else />
         </button>
         <AniimoExportModal />
+        <AniimoPathfinderCardModal />
         <AniimoSettingsModal />
       </div>
     </div>
@@ -105,6 +106,7 @@ import AniimoExportModal from '@/components/toolbar/AniimoExportModal.vue';
 import AniimoFormsFilter from '@/components/toolbar/AniimoFormsFilter.vue';
 import AniimoHomelandAbilityFilter from '@/components/toolbar/AniimoHomelandAbilityFilter.vue';
 import AniimoHomelandModal from '@/components/toolbar/AniimoHomelandModal.vue';
+import AniimoPathfinderCardModal from '@/components/toolbar/AniimoPathfinderCardModal.vue';
 import AniimoRolesFilter from '@/components/toolbar/AniimoRolesFilter.vue';
 import AniimoSettingsModal from '@/components/toolbar/AniimoSettingsModal.vue';
 import { useAniilogStore } from '@/stores/aniilog';

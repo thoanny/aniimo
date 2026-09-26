@@ -28,6 +28,14 @@ type Filters = {
   homelandAbility: undefined | number;
 };
 
+type PathfinderCard = {
+  background: undefined | string;
+  color: undefined | string;
+  username: undefined | string;
+  uid?: string;
+  aniimo: undefined | number;
+};
+
 const defaultFilters: Filters = {
   form: undefined,
   element: undefined,
@@ -37,6 +45,14 @@ const defaultFilters: Filters = {
   homelandAbility: undefined,
 };
 
+const defaultPathfinderCard: PathfinderCard = {
+  background: '#3d3d50',
+  color: '#d3d4eb',
+  username: undefined,
+  uid: undefined,
+  aniimo: undefined,
+};
+
 export const useAniilogStore = defineStore('aniilog', {
   state: () => ({
     aniimo: <number[]>[],
@@ -44,8 +60,25 @@ export const useAniilogStore = defineStore('aniilog', {
     filters: { ...defaultFilters },
     searchQuery: <string>'',
     qrcode: <string>'',
+    pathfinderCard: { ...defaultPathfinderCard },
   }),
   getters: {
+    statistics: (state) => {
+      const caught = state.aniimo.map((aniimoId) => ({
+        ...aniimoData.find((ad) => ad.id === aniimoId),
+      })).length;
+      const prismana = state.aniimo
+        .map((aniimoId) => ({ ...aniimoData.find((ad) => ad.id === aniimoId) }))
+        .filter((aniimo) => aniimo.fields?.Form.id === 5).length;
+      const umbrabow = state.aniimo
+        .map((aniimoId) => ({ ...aniimoData.find((ad) => ad.id === aniimoId) }))
+        .filter((aniimo) => aniimo.fields?.Form.id === 6).length;
+      return {
+        caught: caught - prismana - umbrabow,
+        prismana,
+        umbrabow,
+      };
+    },
     aniimoTotal: (): number => {
       return aniimoData.length;
     },
@@ -213,6 +246,9 @@ export const useAniilogStore = defineStore('aniilog', {
       this.homeland = [];
       this.filters = { ...defaultFilters };
     },
+    resetPathfinderCard() {
+      this.pathfinderCard = { ...defaultPathfinderCard };
+    },
     addToHomeland(aniimoId: number) {
       const aniimo = aniimoData.find((aniimo) => aniimo.id === aniimoId);
       this.homeland.push(aniimoId);
@@ -258,6 +294,6 @@ export const useAniilogStore = defineStore('aniilog', {
     },
   },
   persist: {
-    pick: ['aniimo', 'homeland', 'filters'],
+    pick: ['aniimo', 'homeland', 'filters', 'pathfinderCard'],
   },
 });

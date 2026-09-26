@@ -4,7 +4,7 @@
     <span class="lg:hidden">Import/Export</span>
   </button>
   <dialog ref="modal" class="modal">
-    <div class="modal-box max-w-xs">
+    <div class="modal-box max-w-xs max-h-[95dvh]">
       <form method="dialog">
         <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
       </form>
