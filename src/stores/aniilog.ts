@@ -23,9 +23,9 @@ type Filters = {
   form: undefined | number;
   element: undefined | number;
   role: undefined | number;
-  caught: undefined | number;
-  unavailable: undefined | number;
   homelandAbility: undefined | number;
+  status: undefined | number;
+  caught: undefined | number;
 };
 
 type PathfinderCard = {
@@ -40,9 +40,9 @@ const defaultFilters: Filters = {
   form: undefined,
   element: undefined,
   role: undefined,
-  caught: undefined,
-  unavailable: undefined,
   homelandAbility: undefined,
+  status: undefined,
+  caught: undefined,
 };
 
 const defaultPathfinderCard: PathfinderCard = {
@@ -56,6 +56,8 @@ const defaultPathfinderCard: PathfinderCard = {
 export const useAniilogStore = defineStore('aniilog', {
   state: () => ({
     aniimo: <number[]>[],
+    sparkling: <number[]>[],
+    umbral: <number[]>[],
     homeland: <number[]>[],
     filters: { ...defaultFilters },
     searchQuery: <string>'',
@@ -64,38 +66,57 @@ export const useAniilogStore = defineStore('aniilog', {
   }),
   getters: {
     activefiltersCount: (state) => {
-      return Object.values(state.filters).filter((filter) => !!filter).length;
+      return Object.values(state.filters).filter((filter) => filter !== undefined).length;
     },
     statistics: (state) => {
-      const caught = state.aniimo.map((aniimoId) => ({
+      const aniimoCaughtSparklingUmbral = [
+        ...new Set([...state.aniimo, ...state.sparkling, ...state.umbral]),
+      ];
+      const caught = aniimoCaughtSparklingUmbral.map((aniimoId) => ({
         ...aniimoData.find((ad) => ad.id === aniimoId),
       })).length;
-      const prismana = state.aniimo
+      const prismana = aniimoCaughtSparklingUmbral
         .map((aniimoId) => ({ ...aniimoData.find((ad) => ad.id === aniimoId) }))
         .filter((aniimo) => aniimo.fields?.Form.id === 5).length;
-      const umbrabow = state.aniimo
-        .map((aniimoId) => ({ ...aniimoData.find((ad) => ad.id === aniimoId) }))
-        .filter((aniimo) => aniimo.fields?.Form.id === 6).length;
+      const umbral = state.umbral.map((aniimoId) => ({
+        ...aniimoData.find((ad) => ad.id === aniimoId),
+      })).length;
+      const sparkling = state.sparkling.map((aniimoId) => ({
+        ...aniimoData.find((ad) => ad.id === aniimoId),
+      })).length;
       return {
-        caught: caught - prismana - umbrabow,
+        caught: caught - prismana,
         prismana,
-        umbrabow,
+        sparkling,
+        umbral,
       };
     },
     aniimoTotal: (): number => {
-      return aniimoData.length;
+      return aniimoData.filter((aniimo) => aniimo.fields.Hide !== true).length;
     },
     aniimoCaughtTotal: (state): number => {
-      return state.aniimo.length;
+      return [...new Set([...state.aniimo, ...state.sparkling, ...state.umbral])].length;
     },
     aniimoFiltered: (state) => {
       const aniimo = aniimoData
+        .filter((aniimo) => aniimo.fields.Hide !== true)
         .map((aniimo) => ({
           ...aniimo,
           caught: state.aniimo.indexOf(aniimo.id) >= 0,
+          sparkling: state.sparkling.indexOf(aniimo.id) >= 0,
+          umbral: state.umbral.indexOf(aniimo.id) >= 0,
           homeland: state.homeland.indexOf(aniimo.id) >= 0,
           homelandCount: state.homeland.filter((h) => h === aniimo.id)?.length,
         }))
+        .filter((aniimo) => {
+          if (state.filters.status === undefined) {
+            return true;
+          }
+          if (state.filters.status === 0) {
+            return !aniimo.caught && !aniimo.sparkling && !aniimo.umbral;
+          }
+          return aniimo.caught || aniimo.sparkling || aniimo.umbral;
+        })
         .filter((aniimo) => {
           if (!state.filters.form) {
             return true;
@@ -126,18 +147,6 @@ export const useAniilogStore = defineStore('aniilog', {
             .map((ability) => ability.aniimoHomelandAbilityId);
 
           return aniimo.fields.HomelandAbilities.some((ability) => ids.includes(ability.id));
-        })
-        .filter((aniimo) => {
-          if (!state.filters.caught) {
-            return true;
-          }
-          return aniimo.caught !== true;
-        })
-        .filter((aniimo) => {
-          if (!state.filters.unavailable) {
-            return true;
-          }
-          return aniimo.fields.Number > 0;
         });
 
       if (!state.searchQuery) {
@@ -157,6 +166,7 @@ export const useAniilogStore = defineStore('aniilog', {
     },
     aniimoHomelandFiltered: (state) => {
       return aniimoData
+        .filter((aniimo) => aniimo.fields.Hide !== true)
         .filter((aniimo) => state.homeland.indexOf(aniimo.id) >= 0)
         .map((aniimo) => ({
           ...aniimo,
@@ -164,10 +174,15 @@ export const useAniilogStore = defineStore('aniilog', {
         }));
     },
     formsFiltered: () => {
-      return formsData.sort((a, b) => a.fields.Title.localeCompare(b.fields.Title));
+      return formsData
+        .filter((form) => form.id !== 6)
+        .sort((a, b) => a.fields.Title.localeCompare(b.fields.Title));
     },
     formSelected: (state) => {
       return formsData.find((form) => form.id === state.filters.form);
+    },
+    statusSelected: (state) => {
+      return state.filters.status;
     },
     elementsFiltered: () => {
       return elementsData.sort((a, b) => a.fields.Title.localeCompare(b.fields.Title));
@@ -214,7 +229,9 @@ export const useAniilogStore = defineStore('aniilog', {
     },
     exportCodeLink: (state) => {
       // http://localhost:5173/?save=N4IghiBcDaCMsBoBsCBMBmAnAgHA2ALPgKz4pGkDsC2sADPguvs+g6tgQwcwagLoIQACyhxGiIkUQyJc2ZP4BfIA
-      const code = pack(JSON.stringify({ a: state.aniimo, h: state.homeland }));
+      const code = pack(
+        JSON.stringify({ a: state.aniimo, h: state.homeland, s: state.sparkling, u: state.umbral }),
+      );
       const link = `${location.origin}/?save=${code}`;
       return link;
     },
@@ -235,6 +252,36 @@ export const useAniilogStore = defineStore('aniilog', {
         );
       }
     },
+    toggleSparkling(aniimoId: number) {
+      const idx = this.sparkling.findIndex((id) => aniimoId === id);
+      const aniimo = aniimoData.find((aniimo) => aniimo.id === aniimoId);
+      if (idx < 0) {
+        this.sparkling.push(aniimoId);
+        useToastStore().addToast(
+          `${aniimo?.fields.Title} (${aniimo?.fields.Form.fields.Title}) capturé·e (étincelant).`,
+        );
+      } else {
+        this.sparkling.splice(idx, 1);
+        useToastStore().addToast(
+          `${aniimo?.fields.Title} (${aniimo?.fields.Form.fields.Title}) relâché·e (étincelant).`,
+        );
+      }
+    },
+    toggleUmbral(aniimoId: number) {
+      const idx = this.umbral.findIndex((id) => aniimoId === id);
+      const aniimo = aniimoData.find((aniimo) => aniimo.id === aniimoId);
+      if (idx < 0) {
+        this.umbral.push(aniimoId);
+        useToastStore().addToast(
+          `${aniimo?.fields.Title} (${aniimo?.fields.Form.fields.Title}) capturé·e (ombral).`,
+        );
+      } else {
+        this.umbral.splice(idx, 1);
+        useToastStore().addToast(
+          `${aniimo?.fields.Title} (${aniimo?.fields.Form.fields.Title}) relâché·e (ombral).`,
+        );
+      }
+    },
     setFilter(key: keyof Filters, value: number | undefined) {
       this.filters[key] = value;
     },
@@ -243,9 +290,13 @@ export const useAniilogStore = defineStore('aniilog', {
       this.filters.element = undefined;
       this.filters.role = undefined;
       this.filters.homelandAbility = undefined;
+      this.filters.status = undefined;
+      this.filters.caught = undefined;
     },
     resetStoreState() {
       this.aniimo = [];
+      this.sparkling = [];
+      this.umbral = [];
       this.homeland = [];
       this.filters = { ...defaultFilters };
     },
@@ -282,6 +333,12 @@ export const useAniilogStore = defineStore('aniilog', {
       if (data.h) {
         this.homeland = data.h;
       }
+      if (data.s) {
+        this.sparkling = data.s;
+      }
+      if (data.u) {
+        this.umbral = data.u;
+      }
       return history.replaceState(null, '', '/');
     },
     async generateQRCode() {
@@ -297,6 +354,6 @@ export const useAniilogStore = defineStore('aniilog', {
     },
   },
   persist: {
-    pick: ['aniimo', 'homeland', 'filters', 'pathfinderCard'],
+    pick: ['aniimo', 'sparkling', 'umbral', 'homeland', 'filters', 'pathfinderCard'],
   },
 });

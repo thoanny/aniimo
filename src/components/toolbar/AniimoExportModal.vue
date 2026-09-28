@@ -23,7 +23,7 @@
         class="bg-neutral text-neutral-content py-3 px-4 rounded-box mt-4 break-all text-xs select-none cursor-pointer"
         @click="copyToClipboard"
       >
-        {{ exportCodeLink }}
+        <div class="line-clamp-3">{{ exportCodeLink }}</div>
       </div>
       <button
         class="btn btn-neutral btn-block mt-2 transition-all"

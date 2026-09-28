@@ -54,7 +54,15 @@
               />
             </div>
 
-            <div class="absolute bottom-0 z-30 w-full flex justify-center items-end">
+            <div
+              class="absolute bottom-0 z-30 w-full flex justify-center items-end"
+              v-if="
+                statistics.caught > 0 ||
+                statistics.prismana > 0 ||
+                statistics.sparkling > 0 ||
+                statistics.umbral > 0
+              "
+            >
               <SmoothAngleIcon
                 class="size-4"
                 :style="{
@@ -62,22 +70,26 @@
                 }"
               />
               <div
-                class="flex gap-2 justify-center items-start font-semibold pt-2 pl-3 pr-4 rounded-t-xl"
+                class="flex gap-2 justify-center items-start font-semibold pt-2 pl-2 pr-3 pb-1 rounded-t-xl text-sm"
                 :style="{
                   backgroundColor: pathfinderCard.background || 'var(--color-primary)',
                 }"
               >
-                <div class="flex gap-1 items-center">
-                  <AniimoCaughtIcon class="size-8" />
+                <div class="flex gap-0 items-center" v-if="statistics.caught > 0">
+                  <AniimoBaseIcon class="size-6" />
                   {{ statistics.caught }}
                 </div>
-                <div class="flex gap-1 items-center">
-                  <AniimoPrismanaIcon class="size-8" />
+                <div class="flex gap-0.5 items-center" v-if="statistics.prismana > 0">
+                  <AniimoPrismanaIcon class="size-6" />
                   {{ statistics.prismana }}
                 </div>
-                <div class="flex gap-1 items-center">
-                  <AniimoUmbrabowIcon class="size-8" />
-                  {{ statistics.umbrabow }}
+                <div class="flex gap-0 items-center" v-if="statistics.sparkling > 0">
+                  <AniimoSparklingIcon class="size-6" />
+                  {{ statistics.sparkling }}
+                </div>
+                <div class="flex gap-0.5 items-center" v-if="statistics.umbral">
+                  <AniimoUmbralIcon class="size-6" />
+                  {{ statistics.umbral }}
                 </div>
               </div>
               <SmoothAngleIcon
@@ -201,9 +213,10 @@
 
 <script setup lang="ts">
 import AniimoBackgroundImage from '@/components/aniimo/AniimoBackgroundImage.vue';
-import AniimoCaughtIcon from '@/components/icons/AniimoCaughtIcon.vue';
+import AniimoBaseIcon from '@/components/icons/AniimoBaseIcon.vue';
 import AniimoPrismanaIcon from '@/components/icons/AniimoPrismanaIcon.vue';
-import AniimoUmbrabowIcon from '@/components/icons/AniimoUmbrabowIcon.vue';
+import AniimoSparklingIcon from '@/components/icons/AniimoSparklingIcon.vue';
+import AniimoUmbralIcon from '@/components/icons/AniimoUmbralIcon.vue';
 import SmoothAngleIcon from '@/components/icons/SmoothAngleIcon.vue';
 import aniimoData from '@/data/aniimo.json';
 import { useAniilogStore } from '@/stores/aniilog';

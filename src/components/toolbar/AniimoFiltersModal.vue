@@ -3,6 +3,7 @@ import AniimoElementsFilter from '@/components/toolbar/AniimoElementsFilter.vue'
 import AniimoFormsFilter from '@/components/toolbar/AniimoFormsFilter.vue';
 import AniimoHomelandAbilityFilter from '@/components/toolbar/AniimoHomelandAbilityFilter.vue';
 import AniimoRolesFilter from '@/components/toolbar/AniimoRolesFilter.vue';
+import AniimoStatusFilter from '@/components/toolbar/AniimoStatusFilter.vue';
 import { useAniilogStore } from '@/stores/aniilog';
 import { IconFilter, IconFilterX } from '@tabler/icons-vue';
 import { storeToRefs } from 'pinia';
@@ -35,6 +36,9 @@ const { activefiltersCount } = storeToRefs(aniilogStore);
         <IconFilter />
         Filtrer les Aniimo
       </h3>
+
+      <h4 class="mt-4 mb-2 font-bold">Statut</h4>
+      <AniimoStatusFilter />
 
       <h4 class="mt-4 mb-2 font-bold">Formes</h4>
       <AniimoFormsFilter />

@@ -3,28 +3,56 @@
     <div
       class="select-none w-full h-full aspect-[210/390] rounded-box border-2 border-base-100 relative shadow-lg hover:shadow-xl overflow-hidden transition-all outline-offset-2"
       :class="{
-        'border-green-300': aniimo.caught,
+        'border-green-300': aniimo.caught || aniimo.umbral || aniimo.sparkling,
       }"
     >
-      <div class="absolute top-2 right-2 z-40 flex flex-col gap-1">
-        <button class="btn btn-sm btn-neutral btn-circle" @click="toggleCaught(aniimo.id)">
-          <IconSquareRoundedCheck class="size-5" v-if="aniimo.caught" />
-          <IconSquareRounded class="size-5" v-else />
-        </button>
-        <button class="btn btn-sm btn-neutral btn-circle" @click="addToHomeland(aniimo.id)">
-          <IconHomePlus class="size-5" />
+      <div class="absolute top-2 right-2 z-40 flex flex-col items-end gap-1.5">
+        <div class="flex gap-1.5 items-center">
+          <button
+            class="btn btn-xs btn-circle"
+            @click="toggleUmbral(aniimo.id)"
+            :class="{
+              'btn-neutral': !aniimo.umbral,
+              'btn-success': aniimo.umbral,
+            }"
+          >
+            <AniimoUmbralIcon class="size-7" />
+          </button>
+          <button
+            class="btn btn-xs btn-circle"
+            @click="toggleSparkling(aniimo.id)"
+            :class="{
+              'btn-neutral': !aniimo.sparkling,
+              'btn-success': aniimo.sparkling,
+            }"
+          >
+            <AniimoSparklingIcon class="size-7" />
+          </button>
+          <button
+            class="btn btn-xs btn-circle"
+            @click="toggleCaught(aniimo.id)"
+            :class="{
+              'btn-neutral': !aniimo.caught,
+              'btn-success': aniimo.caught,
+            }"
+          >
+            <AniimoBaseIcon class="size-7" />
+          </button>
+        </div>
+        <button class="btn btn-xs btn-neutral btn-circle" @click="addToHomeland(aniimo.id)">
+          <IconHomePlus class="size-4" />
         </button>
         <button
-          class="btn btn-sm btn-neutral btn-circle"
+          class="btn btn-xs btn-neutral btn-circle"
           @click="removeFromHomeland(aniimo.id)"
           :disabled="aniimo.homelandCount <= 0"
         >
-          <IconHomeMinus class="size-5" />
+          <IconHomeMinus class="size-4" />
         </button>
       </div>
       <AniimoBackgroundImage
         class="w-[135%] sm:w-[130%] -mx-[15%] absolute z-10"
-        v-if="!aniimo.caught"
+        v-if="!aniimo.caught && !aniimo.umbral && !aniimo.sparkling"
       />
       <AniimoBackgroundImage
         class="w-[135%] sm:w-[130%] -mx-[15%] absolute z-10"
@@ -36,7 +64,7 @@
       <div
         class="rounded-br-lg bg-base-100 text-base-content inline-flex px-3 py-1 text-base font-bold absolute top-0 left-0 text-sm z-30"
         :class="{
-          'bg-green-300 text-green-900': aniimo.caught,
+          'bg-green-300 text-green-900': aniimo.caught || aniimo.umbral || aniimo.sparkling,
         }"
       >
         <template v-if="aniimo.fields.Number > 0"
@@ -78,7 +106,7 @@
       <div
         class="bg-base-100 text-base-content flex w-full px-4 py-2 text-base font-bold bottom-0 absolute left-0 justify-center flex flex-col items-center leading-4 z-20"
         :class="{
-          'bg-green-300 text-green-900': aniimo.caught,
+          'bg-green-300 text-green-900': aniimo.caught || aniimo.umbral || aniimo.sparkling,
         }"
       >
         <span class="inline-flex items-center">
@@ -95,18 +123,16 @@ import AniimoBackgroundImage from '@/components/aniimo/AniimoBackgroundImage.vue
 import AniimoElementIcon from '@/components/aniimo/AniimoElementIcon.vue';
 import AniimoHomelandAbilityBadge from '@/components/aniimo/AniimoHomelandAbilityBadge.vue';
 import AniimoRoleIcon from '@/components/aniimo/AniimoRoleIcon.vue';
+import AniimoBaseIcon from '@/components/icons/AniimoBaseIcon.vue';
+import AniimoSparklingIcon from '@/components/icons/AniimoSparklingIcon.vue';
+import AniimoUmbralIcon from '@/components/icons/AniimoUmbralIcon.vue';
 import { useAniilogStore } from '@/stores/aniilog';
 import { getAniimoImageUrl } from '@/utils/image';
-import {
-  IconAlertTriangleFilled,
-  IconHomeMinus,
-  IconHomePlus,
-  IconSquareRounded,
-  IconSquareRoundedCheck,
-} from '@tabler/icons-vue';
+import { IconAlertTriangleFilled, IconHomeMinus, IconHomePlus } from '@tabler/icons-vue';
 
 defineProps(['aniimo']);
 
 const aniilogStore = useAniilogStore();
-const { toggleCaught, addToHomeland, removeFromHomeland } = aniilogStore;
+const { toggleCaught, toggleSparkling, toggleUmbral, addToHomeland, removeFromHomeland } =
+  aniilogStore;
 </script>
