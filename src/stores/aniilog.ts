@@ -100,12 +100,16 @@ export const useAniilogStore = defineStore('aniilog', {
       const prismana = caughtIds.filter(
         (id) => aniimoData.find((ad) => ad.id === id)?.fields.Form.id === 5,
       ).length;
-      const umbral = state.umbral.map((aniimoId) => ({
-        ...aniimoData.find((ad) => ad.id === aniimoId),
-      })).length;
-      const sparkling = state.sparkling.map((aniimoId) => ({
-        ...aniimoData.find((ad) => ad.id === aniimoId),
-      })).length;
+      const umbral = state.settings.umbral
+        ? state.umbral.map((aniimoId) => ({
+            ...aniimoData.find((ad) => ad.id === aniimoId),
+          })).length
+        : 0;
+      const sparkling = state.settings.sparkling
+        ? state.sparkling.map((aniimoId) => ({
+            ...aniimoData.find((ad) => ad.id === aniimoId),
+          })).length
+        : 0;
       return {
         caught: caught - prismana,
         prismana,
@@ -135,9 +139,17 @@ export const useAniilogStore = defineStore('aniilog', {
             return true;
           }
           if (state.filters.status === 0) {
-            return !aniimo.caught && !aniimo.sparkling && !aniimo.umbral;
+            return (
+              !aniimo.caught &&
+              (!aniimo.sparkling || !state.settings.sparkling) &&
+              (!aniimo.umbral || !state.settings.umbral)
+            );
           }
-          return aniimo.caught || aniimo.sparkling || aniimo.umbral;
+          return (
+            aniimo.caught ||
+            (aniimo.sparkling && state.settings.sparkling) ||
+            (aniimo.umbral && state.settings.umbral)
+          );
         })
         .filter((aniimo) => {
           if (!state.filters.stage) {

@@ -3,7 +3,10 @@
     <div
       class="select-none w-full h-full aspect-[210/390] rounded-box border-2 border-base-100 relative shadow-lg hover:shadow-xl overflow-hidden transition-all outline-offset-2"
       :class="{
-        'border-green-300': aniimo.caught || aniimo.umbral || aniimo.sparkling,
+        'border-green-300':
+          aniimo.caught ||
+          (aniimo.umbral && settings.umbral) ||
+          (aniimo.sparkling && settings.sparkling),
       }"
     >
       <div class="absolute top-2 right-2 z-40 flex flex-col items-end gap-1.5">
@@ -56,7 +59,11 @@
       </div>
       <AniimoBackgroundImage
         class="w-[135%] sm:w-[130%] -mx-[15%] absolute z-10"
-        v-if="!aniimo.caught && !aniimo.umbral && !aniimo.sparkling"
+        v-if="
+          !aniimo.caught &&
+          (!aniimo.umbral || !settings.umbral) &&
+          (!aniimo.sparkling || !settings.sparkling)
+        "
       />
       <AniimoBackgroundImage
         class="w-[135%] sm:w-[130%] -mx-[15%] absolute z-10"
@@ -68,7 +75,10 @@
       <div
         class="rounded-br-lg bg-base-100 text-base-content inline-flex px-3 py-1 text-base font-bold absolute top-0 left-0 text-sm z-30"
         :class="{
-          'bg-green-300 text-green-900': aniimo.caught || aniimo.umbral || aniimo.sparkling,
+          'bg-green-300 text-green-900':
+            aniimo.caught ||
+            (aniimo.umbral && settings.umbral) ||
+            (aniimo.sparkling && settings.sparkling),
         }"
       >
         <template v-if="aniimo.fields.Number > 0"
@@ -119,7 +129,10 @@
       <div
         class="bg-base-100 text-base-content flex w-full px-4 py-2 text-base font-bold bottom-0 absolute left-0 justify-center flex flex-col items-center leading-4 z-20"
         :class="{
-          'bg-green-300 text-green-900': aniimo.caught || aniimo.umbral || aniimo.sparkling,
+          'bg-green-300 text-green-900':
+            aniimo.caught ||
+            (aniimo.umbral && settings.umbral) ||
+            (aniimo.sparkling && settings.sparkling),
         }"
       >
         <span class="inline-flex items-center">
