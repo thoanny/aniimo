@@ -15,6 +15,7 @@
               'btn-neutral': !aniimo.umbral,
               'btn-success': aniimo.umbral,
             }"
+            v-if="settings.umbral"
           >
             <AniimoUmbralIcon class="size-7" />
           </button>
@@ -25,6 +26,7 @@
               'btn-neutral': !aniimo.sparkling,
               'btn-success': aniimo.sparkling,
             }"
+            v-if="settings.sparkling"
           >
             <AniimoSparklingIcon class="size-7" />
           </button>
@@ -39,16 +41,18 @@
             <AniimoBaseIcon class="size-7" />
           </button>
         </div>
-        <button class="btn btn-xs btn-neutral btn-circle" @click="addToHomeland(aniimo.id)">
-          <IconHomePlus class="size-4" />
-        </button>
-        <button
-          class="btn btn-xs btn-neutral btn-circle"
-          @click="removeFromHomeland(aniimo.id)"
-          :disabled="aniimo.homelandCount <= 0"
-        >
-          <IconHomeMinus class="size-4" />
-        </button>
+        <div class="flex gap-1.5 items-center" v-if="settings.homeland">
+          <button
+            class="btn btn-xs btn-neutral btn-circle"
+            @click="removeFromHomeland(aniimo.id)"
+            :disabled="aniimo.homelandCount <= 0"
+          >
+            <IconHomeMinus class="size-4" />
+          </button>
+          <button class="btn btn-xs btn-neutral btn-circle" @click="addToHomeland(aniimo.id)">
+            <IconHomePlus class="size-4" />
+          </button>
+        </div>
       </div>
       <AniimoBackgroundImage
         class="w-[135%] sm:w-[130%] -mx-[15%] absolute z-10"
@@ -88,21 +92,29 @@
         v-else
       />
       <div class="flex flex-col gap-1 bottom-14 left-2 absolute w-8 z-20">
-        <AniimoHomelandAbilityBadge
-          v-for="ability in aniimo.fields.HomelandAbilities"
-          :key="ability.id"
-          :ability-id="ability.id"
-        />
+        <template v-if="settings.homelandAbilities">
+          <AniimoHomelandAbilityBadge
+            v-for="ability in aniimo.fields.HomelandAbilities"
+            :key="ability.id"
+            :ability-id="ability.id"
+          />
+        </template>
       </div>
       <div class="flex flex-col gap-1 bottom-14 right-2 absolute w-8 z-20">
-        <!--  -->
-        <AniimoElementIcon
-          v-for="element in aniimo.fields.Elements"
-          :key="element.id"
-          :element-id="element.id"
+        <template v-if="settings.elements">
+          <AniimoElementIcon
+            v-for="element in aniimo.fields.Elements"
+            :key="element.id"
+            :element-id="element.id"
+          />
+        </template>
+        <template v-if="settings.roles">
+          <AniimoRoleIcon v-for="role in aniimo.fields.Roles" :key="role.id" :role-id="role.id" />
+        </template>
+        <AniimoStageIcon
+          v-if="aniimo.fields.Stage && settings.stages"
+          :stage-id="aniimo.fields.Stage.id"
         />
-        <AniimoRoleIcon v-for="role in aniimo.fields.Roles" :key="role.id" :role-id="role.id" />
-        <AniimoStageIcon v-if="aniimo.fields.Stage" :stage-id="aniimo.fields.Stage.id" />
       </div>
       <div
         class="bg-base-100 text-base-content flex w-full px-4 py-2 text-base font-bold bottom-0 absolute left-0 justify-center flex flex-col items-center leading-4 z-20"
@@ -131,10 +143,12 @@ import AniimoUmbralIcon from '@/components/icons/AniimoUmbralIcon.vue';
 import { useAniilogStore } from '@/stores/aniilog';
 import { getAniimoImageUrl } from '@/utils/image';
 import { IconAlertTriangleFilled, IconHomeMinus, IconHomePlus } from '@tabler/icons-vue';
+import { storeToRefs } from 'pinia';
 
 defineProps(['aniimo']);
 
 const aniilogStore = useAniilogStore();
 const { toggleCaught, toggleSparkling, toggleUmbral, addToHomeland, removeFromHomeland } =
   aniilogStore;
+const { settings } = storeToRefs(aniilogStore);
 </script>

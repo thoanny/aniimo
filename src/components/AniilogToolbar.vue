@@ -30,7 +30,7 @@
         <AniimoSettingsModal />
       </div>
     </div>
-    <div class="flex flex-col sm:flex-row items-center gap-2">
+    <div class="flex flex-col sm:flex-row items-center gap-2 min-h-6">
       <div
         class="text-base-content/75 text-sm flex items-center gap-1 font-semibold"
         title="Aniimo affichés/total"
@@ -46,7 +46,7 @@
         <IconSquareArrowDown class="size-5" />
         Capturés : {{ aniimoCaughtTotal }}
       </div>
-      <AniimoHomelandModal />
+      <AniimoHomelandModal v-if="settings.homeland" />
     </div>
   </div>
 </template>
@@ -62,5 +62,6 @@ import { IconEye, IconSearch, IconSquareArrowDown, IconX } from '@tabler/icons-v
 import { storeToRefs } from 'pinia';
 
 const aniilogStore = useAniilogStore();
-const { aniimoFiltered, aniimoTotal, aniimoCaughtTotal, searchQuery } = storeToRefs(aniilogStore);
+const { aniimoFiltered, aniimoTotal, aniimoCaughtTotal, searchQuery, settings } =
+  storeToRefs(aniilogStore);
 </script>

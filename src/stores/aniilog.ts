@@ -38,6 +38,16 @@ type PathfinderCard = {
   aniimo: undefined | number;
 };
 
+type Settings = {
+  umbral: boolean;
+  sparkling: boolean;
+  homelandAbilities: boolean;
+  elements: boolean;
+  roles: boolean;
+  stages: boolean;
+  homeland: boolean;
+};
+
 const defaultFilters: Filters = {
   form: undefined,
   element: undefined,
@@ -56,6 +66,16 @@ const defaultPathfinderCard: PathfinderCard = {
   aniimo: undefined,
 };
 
+const defaultSettings: Settings = {
+  umbral: true,
+  sparkling: true,
+  homelandAbilities: true,
+  elements: true,
+  roles: true,
+  stages: true,
+  homeland: true,
+};
+
 export const useAniilogStore = defineStore('aniilog', {
   state: () => ({
     aniimo: <number[]>[],
@@ -66,6 +86,7 @@ export const useAniilogStore = defineStore('aniilog', {
     searchQuery: <string>'',
     qrcode: <string>'',
     pathfinderCard: { ...defaultPathfinderCard },
+    settings: { ...defaultSettings },
   }),
   getters: {
     activefiltersCount: (state) => {
@@ -310,6 +331,7 @@ export const useAniilogStore = defineStore('aniilog', {
       this.homeland = [];
       this.pathfinderCard = { ...defaultPathfinderCard };
       this.resetFilters();
+      this.settings = { ...defaultSettings };
     },
     resetPathfinderCard() {
       this.pathfinderCard = { ...defaultPathfinderCard };
@@ -365,6 +387,6 @@ export const useAniilogStore = defineStore('aniilog', {
     },
   },
   persist: {
-    pick: ['aniimo', 'sparkling', 'umbral', 'homeland', 'filters', 'pathfinderCard'],
+    pick: ['aniimo', 'sparkling', 'umbral', 'homeland', 'filters', 'pathfinderCard', 'settings'],
   },
 });

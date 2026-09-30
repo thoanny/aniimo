@@ -12,8 +12,41 @@
         <IconSettings />
         Paramètres
       </h3>
-      <div class="flex flex-col gap-4 mt-4">
-        <button class="btn btn-error btn-outline" @click="handleReset">
+      <div class="flex flex-col gap-2 mt-4">
+        <label class="label text-sm text-base-content">
+          <input type="checkbox" class="toggle toggle-success" v-model="settings.umbral" />
+          Afficher la capture des formes ombrales
+        </label>
+        <label class="label text-sm text-base-content">
+          <input type="checkbox" class="toggle toggle-success" v-model="settings.sparkling" />
+          Afficher la capture des formes étincellantes
+        </label>
+        <label class="label text-sm text-base-content">
+          <input
+            type="checkbox"
+            class="toggle toggle-success"
+            v-model="settings.homelandAbilities"
+          />
+          Afficher les capacités de foyer
+        </label>
+        <label class="label text-sm text-base-content">
+          <input type="checkbox" class="toggle toggle-success" v-model="settings.elements" />
+          Afficher les éléments
+        </label>
+        <label class="label text-sm text-base-content">
+          <input type="checkbox" class="toggle toggle-success" v-model="settings.roles" />
+          Afficher les rôles
+        </label>
+        <label class="label text-sm text-base-content">
+          <input type="checkbox" class="toggle toggle-success" v-model="settings.stages" />
+          Afficher les phases
+        </label>
+        <label class="label text-sm text-base-content">
+          <input type="checkbox" class="toggle toggle-success" v-model="settings.homeland" />
+          Activer la gestion du foyer
+        </label>
+
+        <button class="btn btn-error btn-outline mt-2" @click="handleReset">
           Réinitialier toutes les données
         </button>
       </div>
@@ -27,11 +60,13 @@
 <script setup lang="ts">
 import { useAniilogStore } from '@/stores/aniilog';
 import { IconSettings } from '@tabler/icons-vue';
+import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
 
 const modal = ref();
 const aniilogStore = useAniilogStore();
 const { resetStoreState } = aniilogStore;
+const { settings } = storeToRefs(aniilogStore);
 
 const openModal = () => {
   modal.value.showModal();
@@ -44,3 +79,9 @@ const handleReset = () => {
   }
 };
 </script>
+
+<style scoped>
+label {
+  user-select: none;
+}
+</style>
