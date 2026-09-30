@@ -8,6 +8,7 @@ import { useAniilogStore } from '@/stores/aniilog';
 import { IconFilter, IconFilterX } from '@tabler/icons-vue';
 import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
+import AniimoStagesFilter from './AniimoStagesFilter.vue';
 
 const modal = ref();
 const aniilogStore = useAniilogStore();
@@ -39,6 +40,9 @@ const { activefiltersCount } = storeToRefs(aniilogStore);
 
       <h4 class="mt-4 mb-2 font-bold">Statut</h4>
       <AniimoStatusFilter />
+
+      <h4 class="mt-4 mb-2 font-bold">Phases</h4>
+      <AniimoStagesFilter />
 
       <h4 class="mt-4 mb-2 font-bold">Formes</h4>
       <AniimoFormsFilter />

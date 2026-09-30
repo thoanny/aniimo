@@ -102,6 +102,7 @@
           :element-id="element.id"
         />
         <AniimoRoleIcon v-for="role in aniimo.fields.Roles" :key="role.id" :role-id="role.id" />
+        <AniimoStageIcon v-if="aniimo.fields.Stage" :stage-id="aniimo.fields.Stage.id" />
       </div>
       <div
         class="bg-base-100 text-base-content flex w-full px-4 py-2 text-base font-bold bottom-0 absolute left-0 justify-center flex flex-col items-center leading-4 z-20"
@@ -123,6 +124,7 @@ import AniimoBackgroundImage from '@/components/aniimo/AniimoBackgroundImage.vue
 import AniimoElementIcon from '@/components/aniimo/AniimoElementIcon.vue';
 import AniimoHomelandAbilityBadge from '@/components/aniimo/AniimoHomelandAbilityBadge.vue';
 import AniimoRoleIcon from '@/components/aniimo/AniimoRoleIcon.vue';
+import AniimoStageIcon from '@/components/aniimo/AniimoStageIcon.vue';
 import AniimoBaseIcon from '@/components/icons/AniimoBaseIcon.vue';
 import AniimoSparklingIcon from '@/components/icons/AniimoSparklingIcon.vue';
 import AniimoUmbralIcon from '@/components/icons/AniimoUmbralIcon.vue';

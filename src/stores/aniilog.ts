@@ -4,6 +4,7 @@ import elementsData from '@/data/elements.json';
 import formsData from '@/data/forms.json';
 import homelandAbilities from '@/data/homeland-abilities.json';
 import rolesData from '@/data/roles.json';
+import stagesData from '@/data/stages.json';
 import { useToastStore } from '@/stores/toast';
 import Fuse from 'fuse.js/basic';
 import {
@@ -26,6 +27,7 @@ type Filters = {
   homelandAbility: undefined | number;
   status: undefined | number;
   caught: undefined | number;
+  stage: undefined | number;
 };
 
 type PathfinderCard = {
@@ -43,6 +45,7 @@ const defaultFilters: Filters = {
   homelandAbility: undefined,
   status: undefined,
   caught: undefined,
+  stage: undefined,
 };
 
 const defaultPathfinderCard: PathfinderCard = {
@@ -118,6 +121,12 @@ export const useAniilogStore = defineStore('aniilog', {
           return aniimo.caught || aniimo.sparkling || aniimo.umbral;
         })
         .filter((aniimo) => {
+          if (!state.filters.stage) {
+            return true;
+          }
+          return aniimo.fields.Stage?.id === state.filters.stage;
+        })
+        .filter((aniimo) => {
           if (!state.filters.form) {
             return true;
           }
@@ -189,6 +198,12 @@ export const useAniilogStore = defineStore('aniilog', {
     },
     elementSelected: (state) => {
       return elementsData.find((element) => element.id === state.filters.element);
+    },
+    stagesFiltered: () => {
+      return stagesData;
+    },
+    stageSelected: (state) => {
+      return stagesData.find((stage) => stage.id === state.filters.stage);
     },
     rolesFiltered: () => {
       return rolesData.sort((a, b) => a.fields.Title.localeCompare(b.fields.Title));
@@ -286,19 +301,15 @@ export const useAniilogStore = defineStore('aniilog', {
       this.filters[key] = value;
     },
     resetFilters() {
-      this.filters.form = undefined;
-      this.filters.element = undefined;
-      this.filters.role = undefined;
-      this.filters.homelandAbility = undefined;
-      this.filters.status = undefined;
-      this.filters.caught = undefined;
+      this.filters = { ...defaultFilters };
     },
     resetStoreState() {
       this.aniimo = [];
       this.sparkling = [];
       this.umbral = [];
       this.homeland = [];
-      this.filters = { ...defaultFilters };
+      this.pathfinderCard = { ...defaultPathfinderCard };
+      this.resetFilters();
     },
     resetPathfinderCard() {
       this.pathfinderCard = { ...defaultPathfinderCard };
