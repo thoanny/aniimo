@@ -93,15 +93,13 @@ export const useAniilogStore = defineStore('aniilog', {
       return Object.values(state.filters).filter((filter) => filter !== undefined).length;
     },
     statistics: (state) => {
-      const aniimoCaughtSparklingUmbral = [
-        ...new Set([...state.aniimo, ...state.sparkling, ...state.umbral]),
-      ];
-      const caught = aniimoCaughtSparklingUmbral.map((aniimoId) => ({
+      const caughtIds = [...new Set([...state.aniimo, ...state.sparkling, ...state.umbral])];
+      const caught = caughtIds.map((aniimoId) => ({
         ...aniimoData.find((ad) => ad.id === aniimoId),
       })).length;
-      const prismana = aniimoCaughtSparklingUmbral
-        .map((aniimoId) => ({ ...aniimoData.find((ad) => ad.id === aniimoId) }))
-        .filter((aniimo) => aniimo.fields?.Form.id === 5).length;
+      const prismana = caughtIds.filter(
+        (id) => aniimoData.find((ad) => ad.id === id)?.fields.Form.id === 5,
+      ).length;
       const umbral = state.umbral.map((aniimoId) => ({
         ...aniimoData.find((ad) => ad.id === aniimoId),
       })).length;
