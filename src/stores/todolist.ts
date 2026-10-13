@@ -51,8 +51,6 @@ export const useTodolistStore = defineStore('todolist', {
   },
   actions: {
     addTask(task: UserTask) {
-      console.log(task, !task.title || task.title.length < 1);
-
       if (!task.title || task.title.length < 1) {
         throw new Error('Le titre est obligatoire');
       }
