@@ -1,6 +1,10 @@
 import todolist from '@/data/todolist.json';
-import type { Period, Settings, Task, UserTask } from '@/types/todolist';
+import type { Category, Period, Settings, Task, TaskKey, UserTask } from '@/types/todolist';
 import { defineStore } from 'pinia';
+
+export const UNCATEGORIZED = 'none';
+
+const defaultCategories: Category[] = [];
 
 const defaultSettings: Settings = {
   showHidden: true,
@@ -11,10 +15,12 @@ export const useTodolistStore = defineStore('todolist', {
     tasks: <UserTask[]>[],
     completed: <number[]>[],
     hidden: <number[]>[],
+    categories: <Category[]>[],
+    layout: <Record<string, TaskKey[]>>{ [UNCATEGORIZED]: [] },
     settings: { ...defaultSettings },
   }),
   getters: {
-    tasksFiltered: (state) => {
+    allTasks: (state): Task[] => {
       const dataTasks: Task[] = todolist.map((task) => ({
         id: task.id,
         title: task.fields.Title,
@@ -25,19 +31,13 @@ export const useTodolistStore = defineStore('todolist', {
         completed: state.completed.includes(task.id),
       }));
 
-      const all: Task[] = [...dataTasks, ...state.tasks];
-
-      return all
-        .filter((task) => {
-          if (state.settings.showHidden) {
-            return true;
-          }
-
-          return task.hidden === false;
-        })
-        .sort((a, b) => {
-          return Number(a.completed) - Number(b.completed);
-        });
+      return [...dataTasks, ...state.tasks];
+    },
+    tasksById(): Map<TaskKey, Task> {
+      return new Map(this.allTasks.map((task) => [task.id, task]));
+    },
+    tasksFiltered(): Task[] {
+      return this.allTasks.filter((task) => this.settings.showHidden || !task.hidden);
     },
     statistics: (state) => {
       const min = state.completed.length + state.tasks.filter((task) => task.completed).length;
@@ -50,12 +50,65 @@ export const useTodolistStore = defineStore('todolist', {
     },
   },
   actions: {
+    syncLayout() {
+      for (const category of defaultCategories) {
+        if (!this.categories.some((c) => c.id === category.id)) {
+          this.categories.push({ ...category });
+        }
+      }
+
+      const valid = new Set(this.allTasks.map((task) => task.id));
+      const placed = new Set<TaskKey>();
+
+      for (const key of [UNCATEGORIZED, ...this.categories.map((c) => c.id)]) {
+        this.layout[key] = (this.layout[key] ?? []).filter((id) => {
+          if (!valid.has(id) || placed.has(id)) {
+            return false;
+          }
+          placed.add(id);
+          return true;
+        });
+      }
+
+      for (const id of valid) {
+        if (!placed.has(id)) {
+          this.layout[UNCATEGORIZED]?.push(id);
+        }
+      }
+    },
+    addCategory(title: string) {
+      const clean = title.trim();
+      if (!clean) {
+        return;
+      }
+
+      const key = (Math.random() + 1).toString(36).substring(5);
+      this.categories.push({ id: key, title: clean, collapsed: false, custom: true });
+      this.layout[key] = [];
+    },
+    removeCategory(categoryId: string) {
+      const idx = this.categories.findIndex((c) => c.id === categoryId && c.custom);
+      if (idx < 0) {
+        return;
+      }
+
+      this.layout[UNCATEGORIZED]?.push(...(this.layout[categoryId] ?? []));
+      delete this.layout[categoryId];
+      this.categories.splice(idx, 1);
+    },
+    toggleCategoryCollapsed(categoryId: string) {
+      const category = this.categories.find((c) => c.id == categoryId);
+      if (category) {
+        category.collapsed = !category.collapsed;
+      }
+    },
     addTask(task: UserTask) {
       if (!task.title || task.title.length < 1) {
         throw new Error('Le titre est obligatoire');
       }
 
       this.tasks.push(task);
+      this.syncLayout();
 
       return true;
     },
@@ -67,6 +120,7 @@ export const useTodolistStore = defineStore('todolist', {
       const idx = this.tasks.findIndex((task) => task.id === taskId);
       if (idx >= 0) {
         this.tasks.splice(idx, 1);
+        this.syncLayout();
       }
     },
     toggleTaskCompleted(taskId: number | string) {
@@ -100,7 +154,7 @@ export const useTodolistStore = defineStore('todolist', {
       }
     },
     resetTasksWherePeriod(type: 'daily' | 'weekly') {
-      const dailyCompletedIds = this.tasksFiltered
+      const dailyCompletedIds = this.allTasks
         .filter((task) => task.completed === true && task.period === type)
         .map((task) => task.id);
 
@@ -124,6 +178,6 @@ export const useTodolistStore = defineStore('todolist', {
     },
   },
   persist: {
-    pick: ['completed', 'hidden', 'settings', 'tasks'],
+    pick: ['completed', 'hidden', 'settings', 'tasks', 'categories', 'layout'],
   },
 });

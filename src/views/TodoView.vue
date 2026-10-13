@@ -1,31 +1,59 @@
 <script setup lang="ts">
 import TaskAddModal from '@/components/TaskAddModal.vue';
-import { useTodolistStore } from '@/stores/todolist';
+import { UNCATEGORIZED, useTodolistStore } from '@/stores/todolist';
+import type { TaskKey } from '@/types/todolist';
 import {
   IconExternalLink,
   IconEye,
   IconEyeClosed,
+  IconFolderLock,
+  IconFolderOpen,
+  IconFolderPlus,
+  IconGripVertical,
   IconRefreshDot,
   IconRestore,
   IconSquareRounded,
   IconSquareRoundedCheck,
   IconSquareRoundedX,
+  IconTrash,
 } from '@tabler/icons-vue';
 import { storeToRefs } from 'pinia';
 import sanitizeHtml from 'sanitize-html';
+import { computed, ref } from 'vue';
+import { VueDraggable } from 'vue-draggable-plus';
 
 const todolist = useTodolistStore();
-const { tasksFiltered, settings, statistics } = storeToRefs(todolist);
+const { tasksFiltered, tasksById, categories, layout, settings, statistics } =
+  storeToRefs(todolist);
 const {
   toggleTaskHidden,
   resetTasksWherePeriod,
   resetTasksCompleted,
   toggleTaskCompleted,
   removeTask,
+  addCategory,
+  removeCategory,
+  toggleCategoryCollapsed,
 } = todolist;
+
+todolist.syncLayout();
 
 const sanitizeOptions = {
   allowedTags: ['b', 'i', 'em', 'strong', 'kbd'],
+};
+
+const sections = computed(() => [
+  { id: UNCATEGORIZED, title: 'Sans catégorie', collapsed: false, custom: false },
+  ...categories.value,
+]);
+
+const tasksOf = (sectionId: string) =>
+  (layout.value[sectionId] ?? []).map((id) => tasksById.value.get(id)!);
+
+const newCategory = ref('');
+const submitCategory = () => {
+  addCategory(newCategory.value);
+  newCategory.value = '';
 };
 </script>
 
@@ -65,65 +93,118 @@ const sanitizeOptions = {
       ></progress>
     </div>
     <div class="flex flex-col gap-3 mt-4" v-if="tasksFiltered.length > 0">
-      <div
-        class="card bg-base-100 card-xs shadow hover:shadow-lg rounded-full select-none"
-        v-for="task in tasksFiltered"
-        :key="task.id"
-        @dblclick="removeTask(task.id)"
-      >
-        <div class="card-body text-sm">
-          <span
-            class="badge badge-xs absolute -top-[6px] left-13 font-bold"
-            v-if="task.period"
-            :class="{
-              'badge-accent': task.period === 'daily',
-              'badge-secondary': task.period === 'weekly',
-            }"
+      <section v-for="section in sections" :key="section.id" class="flex flex-col gap-3">
+        <header
+          class="flex items-center gap-3 p-2 bg-neutral rounded-full text-neutral-content min-h-14"
+          :class="{
+            'px-6': section.id === UNCATEGORIZED,
+          }"
+          v-if="categories.length > 0"
+        >
+          <button
+            v-if="section.id !== UNCATEGORIZED"
+            class="btn btn-circle"
+            @click="toggleCategoryCollapsed(section.id)"
           >
-            {{ task.period }}
-          </span>
-          <div class="flex gap-3 items-center">
-            <button
-              class="btn btn-circle"
-              @click="toggleTaskCompleted(task.id)"
-              :class="{
-                'btn-success btn-soft': task.completed,
-              }"
-            >
-              <IconSquareRounded v-if="!task.completed" />
-              <IconSquareRoundedCheck v-else />
-            </button>
-            <div class="grow">
-              <div class="font-bold">
-                {{ task.title }}
-              </div>
-              <div
-                v-html="sanitizeHtml(task.description, sanitizeOptions)"
-                class="text-xs"
-                v-if="task.description"
-              ></div>
-            </div>
-            <div class="flex gap-2 items-center">
-              <a
-                :href="task.link"
-                target="_blank"
-                class="btn btn-neutral btn-circle"
-                v-if="task.link"
+            <IconFolderLock class="size-5" v-if="section.collapsed" />
+            <IconFolderOpen class="size-5" v-else />
+          </button>
+          <h2 class="font-semibold">{{ section.title }}</h2>
+          <span class="grow"></span>
+          <button
+            v-if="section.custom"
+            class="btn btn-ghost btn-error btn-circle"
+            @click="removeCategory(section.id)"
+          >
+            <IconTrash class="size-5" />
+          </button>
+        </header>
+        <VueDraggable
+          v-show="!section.collapsed"
+          :model-value="layout[section.id] ?? []"
+          @update:model-value="(ids: TaskKey[]) => (layout[section.id] = ids)"
+          group="tasks"
+          handle=".drag-handle"
+          :animation="150"
+          class="flex flex-col gap-3 rounded-box"
+        >
+          <div
+            class="card bg-base-100 card-xs shadow hover:shadow-lg rounded-full select-none"
+            v-for="task in tasksOf(section.id)"
+            :key="task.id"
+            v-show="settings.showHidden || !task.hidden"
+            @dblclick="removeTask(task.id)"
+          >
+            <div class="card-body text-sm">
+              <span
+                class="badge badge-xs absolute -top-[6px] left-19 font-bold"
+                v-if="task.period"
+                :class="{
+                  'badge-accent': task.period === 'daily',
+                  'badge-secondary': task.period === 'weekly',
+                }"
               >
-                <IconExternalLink class="size-5" />
-              </a>
-              <button class="btn btn-soft btn-circle" @click="toggleTaskHidden(task.id)">
-                <IconEye class="size-5" v-if="!task.hidden" />
-                <IconEyeClosed class="size-5" v-else />
-              </button>
+                {{ task.period }}
+              </span>
+              <div class="flex gap-3 items-center">
+                <IconGripVertical
+                  class="drag-handle size-5 shrink-0 cursor-grab opacity-50 -mr-2"
+                />
+                <button
+                  class="btn btn-circle"
+                  @click="toggleTaskCompleted(task.id)"
+                  :class="{
+                    'btn-success btn-soft': task.completed,
+                  }"
+                >
+                  <IconSquareRounded v-if="!task.completed" />
+                  <IconSquareRoundedCheck v-else />
+                </button>
+                <div class="grow">
+                  <div class="font-bold">
+                    {{ task.title }}
+                  </div>
+                  <div
+                    v-html="sanitizeHtml(task.description, sanitizeOptions)"
+                    class="text-xs"
+                    v-if="task.description"
+                  ></div>
+                </div>
+                <div class="flex gap-2 items-center">
+                  <a
+                    :href="task.link"
+                    target="_blank"
+                    class="btn btn-neutral btn-circle"
+                    v-if="task.link"
+                  >
+                    <IconExternalLink class="size-5" />
+                  </a>
+                  <button class="btn btn-soft btn-circle" @click="toggleTaskHidden(task.id)">
+                    <IconEye class="size-5" v-if="!task.hidden" />
+                    <IconEyeClosed class="size-5" v-else />
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+        </VueDraggable>
+      </section>
     </div>
     <div class="flex mt-4" v-else>
       <div class="alert">Aucune tâche à afficher...</div>
     </div>
+
+    <form class="join w-full mt-4 px-2" @submit.prevent="submitCategory">
+      <input
+        type="text"
+        v-model="newCategory"
+        class="input join-item grow"
+        placeholder="Nouvelle catégorie"
+      />
+      <button class="btn btn-neutral join-item" :disabled="!newCategory.trim()">
+        <IconFolderPlus class="size-5" /> Ajouter
+      </button>
+    </form>
   </div>
 </template>
 
