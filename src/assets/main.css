@@ -116,3 +116,15 @@ body {
     }
   }
 }
+
+kbd {
+  @apply kbd;
+}
+
+.text-sm kbd {
+  @apply kbd-sm;
+}
+
+.text-xs kbd {
+  @apply kbd-xs;
+}

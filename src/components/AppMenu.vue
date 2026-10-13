@@ -3,6 +3,7 @@ import {
   IconCalendarWeek,
   IconExternalLink,
   IconFlame,
+  IconListCheck,
   IconMenu2Filled,
   IconNotebook,
   type Icon,
@@ -29,6 +30,13 @@ const menuItems: MenuItem[] = [
     title: 'Évènements',
     link: '/events',
     icon: IconCalendarWeek,
+    external: false,
+  },
+  {
+    id: 'dea2df1c',
+    title: 'Todo',
+    link: '/todo',
+    icon: IconListCheck,
     external: false,
   },
   {

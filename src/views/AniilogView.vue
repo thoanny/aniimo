@@ -8,7 +8,7 @@
       <AniimoCard v-for="aniimo in aniimoFiltered" :key="aniimo.id" :aniimo="aniimo" />
     </div>
     <div class="flex justify-center" v-else>
-      <div class="alert">Aucun Aniimo a afficher...</div>
+      <div class="alert">Aucun Aniimo à afficher...</div>
     </div>
   </div>
 </template>

@@ -39,6 +39,10 @@ const endpoints = {
     path: './src/data/stages.json',
     url: `${NOCODB_URL}/myh7zuit4zp04em/records?pageSize=9999&viewId=vw35uc8lyq3996w2`,
   },
+  todolist: {
+    path: './src/data/todolist.json',
+    url: `${NOCODB_URL}/mnjpsyozjgcmupg/records?pageSize=9999&viewId=vw8rgw0qtt2lztr2`,
+  },
 };
 
 Object.keys(endpoints).forEach((endpoint) => {
