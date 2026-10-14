@@ -3,6 +3,7 @@ import TaskAddModal from '@/components/TaskAddModal.vue';
 import { UNCATEGORIZED, useTodolistStore } from '@/stores/todolist';
 import type { TaskKey } from '@/types/todolist';
 import {
+  IconEdit,
   IconExternalLink,
   IconEye,
   IconEyeClosed,
@@ -23,8 +24,7 @@ import { computed, ref } from 'vue';
 import { VueDraggable } from 'vue-draggable-plus';
 
 const todolist = useTodolistStore();
-const { tasksFiltered, tasksById, categories, layout, settings, statistics } =
-  storeToRefs(todolist);
+const { tasksFiltered, tasksById, categories, layout, statistics } = storeToRefs(todolist);
 const {
   toggleTaskHidden,
   resetTasksWherePeriod,
@@ -55,6 +55,8 @@ const submitCategory = () => {
   addCategory(newCategory.value);
   newCategory.value = '';
 };
+
+const isEditMode = <boolean>ref(false);
 </script>
 
 <template>
@@ -75,14 +77,11 @@ const submitCategory = () => {
       </button>
       <div class="grow hidden lg:block"></div>
       <button
-        class="btn btn-neutral btn-block lg:btn-circle"
-        @click="settings.showHidden = !settings.showHidden"
+        class="btn btn-circle"
+        @click="isEditMode = !isEditMode"
+        :class="{ 'btn-success': isEditMode, 'btn-neutral': !isEditMode }"
       >
-        <IconEyeClosed class="size-5" v-if="!settings.showHidden" />
-        <IconEye class="size-5" v-else />
-        <span class="lg:hidden">
-          {{ settings.showHidden ? 'Afficher toutes les tâches' : 'Masquer les tâches' }}
-        </span>
+        <IconEdit />
       </button>
     </div>
     <div class="p-2 bg-base-100 mt-4 flex items-center rounded-box text-xs">
@@ -112,7 +111,7 @@ const submitCategory = () => {
           <h2 class="font-semibold">{{ section.title }}</h2>
           <span class="grow"></span>
           <button
-            v-if="section.custom"
+            v-if="section.custom && isEditMode"
             class="btn btn-ghost btn-error btn-circle"
             @click="removeCategory(section.id)"
           >
@@ -132,8 +131,7 @@ const submitCategory = () => {
             class="card bg-base-100 card-xs shadow hover:shadow-lg rounded-full select-none"
             v-for="task in tasksOf(section.id)"
             :key="task.id"
-            v-show="settings.showHidden || !task.hidden"
-            @dblclick="removeTask(task.id)"
+            v-show="!task.hidden || isEditMode"
           >
             <div class="card-body text-sm">
               <span
@@ -156,6 +154,7 @@ const submitCategory = () => {
                   :class="{
                     'btn-success btn-soft': task.completed,
                   }"
+                  :disabled="isEditMode"
                 >
                   <IconSquareRounded v-if="!task.completed" />
                   <IconSquareRoundedCheck v-else />
@@ -179,9 +178,21 @@ const submitCategory = () => {
                   >
                     <IconExternalLink class="size-5" />
                   </a>
-                  <button class="btn btn-soft btn-circle" @click="toggleTaskHidden(task.id)">
+                  <TaskAddModal :task v-if="task.custom && isEditMode" />
+                  <button
+                    class="btn btn-soft btn-circle"
+                    @click="toggleTaskHidden(task.id)"
+                    v-if="isEditMode"
+                  >
                     <IconEye class="size-5" v-if="!task.hidden" />
                     <IconEyeClosed class="size-5" v-else />
+                  </button>
+                  <button
+                    class="btn btn-soft btn-error btn-circle"
+                    @click="removeTask(task.id)"
+                    v-if="isEditMode && task.custom"
+                  >
+                    <IconTrash class="size-5" />
                   </button>
                 </div>
               </div>

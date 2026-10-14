@@ -1,14 +1,10 @@
 import todolist from '@/data/todolist.json';
-import type { Category, Period, Settings, Task, TaskKey, UserTask } from '@/types/todolist';
+import type { Category, Period, Task, TaskKey, UserTask } from '@/types/todolist';
 import { defineStore } from 'pinia';
 
 export const UNCATEGORIZED = 'none';
 
 const defaultCategories: Category[] = [];
-
-const defaultSettings: Settings = {
-  showHidden: true,
-};
 
 export const useTodolistStore = defineStore('todolist', {
   state: () => ({
@@ -17,7 +13,6 @@ export const useTodolistStore = defineStore('todolist', {
     hidden: <number[]>[],
     categories: <Category[]>[],
     layout: <Record<string, TaskKey[]>>{ [UNCATEGORIZED]: [] },
-    settings: { ...defaultSettings },
   }),
   getters: {
     allTasks: (state): Task[] => {
@@ -29,15 +24,16 @@ export const useTodolistStore = defineStore('todolist', {
         link: task.fields.Link ?? null,
         hidden: state.hidden.includes(task.id),
         completed: state.completed.includes(task.id),
+        custom: false,
       }));
 
-      return [...dataTasks, ...state.tasks];
+      return [...dataTasks, ...state.tasks.map((task) => ({ ...task, custom: true }))];
     },
     tasksById(): Map<TaskKey, Task> {
       return new Map(this.allTasks.map((task) => [task.id, task]));
     },
     tasksFiltered(): Task[] {
-      return this.allTasks.filter((task) => this.settings.showHidden || !task.hidden);
+      return this.allTasks.filter((task) => !task.hidden);
     },
     statistics: (state) => {
       const min = state.completed.length + state.tasks.filter((task) => task.completed).length;
@@ -112,6 +108,21 @@ export const useTodolistStore = defineStore('todolist', {
 
       return true;
     },
+    updateTask(task: UserTask) {
+      if (!task.title || task.title.length < 1) {
+        throw new Error('Le titre est obligatoire');
+      }
+
+      const idx = this.tasks.findIndex((t) => t.id === task.id);
+      if (idx < 0) {
+        throw new Error('Tâche introuvable');
+      }
+
+      this.tasks[idx] = task;
+      this.syncLayout();
+
+      return true;
+    },
     removeTask(taskId: string | number) {
       if (typeof taskId === 'number') {
         return;
@@ -178,6 +189,6 @@ export const useTodolistStore = defineStore('todolist', {
     },
   },
   persist: {
-    pick: ['completed', 'hidden', 'settings', 'tasks', 'categories', 'layout'],
+    pick: ['completed', 'hidden', 'tasks', 'categories', 'layout'],
   },
 });

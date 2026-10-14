@@ -10,17 +10,15 @@ export type Task = {
   link: string | null;
   hidden: boolean;
   completed: boolean;
+  custom: boolean;
 };
 
 export type UserTask = Task & {
   id: string;
 };
 
-export type NewTask = {
-  title: string;
-  description: string;
-  period: Period;
-  link: string;
+export type NewTask = Task & {
+  id?: string;
 };
 
 export type Category = {
@@ -28,8 +26,4 @@ export type Category = {
   title: string;
   collapsed: boolean;
   custom: boolean;
-};
-
-export type Settings = {
-  showHidden: boolean;
 };
