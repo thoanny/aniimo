@@ -3,6 +3,8 @@ import TaskAddModal from '@/components/TaskAddModal.vue';
 import { UNCATEGORIZED, useTodolistStore } from '@/stores/todolist';
 import type { TaskKey } from '@/types/todolist';
 import {
+  IconArrowDown,
+  IconArrowUp,
   IconEdit,
   IconExternalLink,
   IconEye,
@@ -34,6 +36,7 @@ const {
   addCategory,
   removeCategory,
   toggleCategoryCollapsed,
+  moveCategory,
 } = todolist;
 
 todolist.syncLayout();
@@ -56,7 +59,7 @@ const submitCategory = () => {
   newCategory.value = '';
 };
 
-const isEditMode = <boolean>ref(false);
+const isEditMode = ref(false);
 </script>
 
 <template>
@@ -94,7 +97,7 @@ const isEditMode = <boolean>ref(false);
     <div class="flex flex-col gap-3 mt-4" v-if="tasksFiltered.length > 0">
       <section v-for="section in sections" :key="section.id" class="flex flex-col gap-3">
         <header
-          class="flex items-center gap-3 p-2 bg-neutral rounded-full text-neutral-content min-h-14"
+          class="flex items-center gap-2 p-2 bg-neutral rounded-full text-neutral-content min-h-14"
           :class="{
             'px-6': section.id === UNCATEGORIZED,
           }"
@@ -110,6 +113,24 @@ const isEditMode = <boolean>ref(false);
           </button>
           <h2 class="font-semibold">{{ section.title }}</h2>
           <span class="grow"></span>
+
+          <template v-if="section.id !== UNCATEGORIZED && isEditMode">
+            <button
+              class="btn btn-circle"
+              @click="moveCategory(section.id, -1)"
+              :disabled="categories[0]?.id === section.id"
+            >
+              <IconArrowUp class="size-5" />
+            </button>
+            <button
+              class="btn btn-circle"
+              @click="moveCategory(section.id, 1)"
+              :disabled="categories.at(-1)?.id === section.id"
+            >
+              <IconArrowDown class="size-5" />
+            </button>
+          </template>
+
           <button
             v-if="section.custom && isEditMode"
             class="btn btn-ghost btn-error btn-circle"

@@ -98,6 +98,16 @@ export const useTodolistStore = defineStore('todolist', {
         category.collapsed = !category.collapsed;
       }
     },
+    moveCategory(categoryId: string, direction: -1 | 1) {
+      const from = this.categories.findIndex((c) => c.id === categoryId);
+      const to = from + direction;
+      if (from < 0 || to < 0 || to >= this.categories.length) {
+        return;
+      }
+
+      const [category] = this.categories.splice(from, 1);
+      this.categories.splice(to, 0, category!);
+    },
     addTask(task: UserTask) {
       if (!task.title || task.title.length < 1) {
         throw new Error('Le titre est obligatoire');
