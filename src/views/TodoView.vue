@@ -87,7 +87,7 @@ const isEditMode = ref(false);
         <IconEdit />
       </button>
     </div>
-    <div class="p-2 bg-base-100 mt-4 flex items-center rounded-box text-xs">
+    <div class="p-2 bg-base-100 mt-4 flex items-center rounded-box text-xs flex-col">
       <progress
         class="progress progress-success w-full"
         :value="statistics.min"

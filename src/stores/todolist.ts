@@ -35,9 +35,12 @@ export const useTodolistStore = defineStore('todolist', {
     tasksFiltered(): Task[] {
       return this.allTasks.filter((task) => !task.hidden);
     },
-    statistics: (state) => {
-      const min = state.completed.length + state.tasks.filter((task) => task.completed).length;
-      const max = todolist.length + state.tasks.length;
+    tasksCompleted(): Task[] {
+      return this.allTasks.filter((task) => !task.hidden && task.completed);
+    },
+    statistics() {
+      const min = this.tasksCompleted.length;
+      const max = this.tasksFiltered.length;
       return {
         min,
         max,
