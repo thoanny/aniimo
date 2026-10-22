@@ -29,6 +29,7 @@
             @input="error = ''"
             autocomplete="off"
             maxlength="100"
+            :autofocus="!editedTask.title"
           />
         </fieldset>
         <fieldset class="fieldset">
@@ -55,10 +56,19 @@
         <fieldset class="fieldset">
           <label class="label" for="period">Période</label>
           <select id="period" class="select w-full" v-model="editedTask.period">
-            <option value="">Aucune</option>
+            <option :value="null">-- Aucune --</option>
             <option value="daily">Quotidienne</option>
             <option value="weekly">Hebdomadaire</option>
             <option value="season">Saison</option>
+          </select>
+        </fieldset>
+        <fieldset class="fieldset">
+          <label class="label" for="category">Catégorie</label>
+          <select id="category" class="select w-full" v-model="editedTask.category">
+            <option :value="UNCATEGORIZED">-- Sans catégorie --</option>
+            <option v-for="category in categories" :key="category.id" :value="category.id">
+              {{ category.title }}
+            </option>
           </select>
         </fieldset>
         <button class="btn btn-neutral btn-block mt-2 transition-all" type="submit">
@@ -70,14 +80,16 @@
 </template>
 
 <script setup lang="ts">
-import { useTodolistStore } from '@/stores/todolist';
+import { UNCATEGORIZED, useTodolistStore } from '@/stores/todolist';
 import { IconEdit, IconPlus } from '@tabler/icons-vue';
+import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
 
 const props = defineProps(['task']);
 
 const todolist = useTodolistStore();
 const { addTask, updateTask } = todolist;
+const { categories } = storeToRefs(todolist);
 
 const initialTask = {
   id: undefined,
@@ -85,6 +97,7 @@ const initialTask = {
   description: '',
   period: null,
   link: '',
+  category: UNCATEGORIZED,
 };
 
 const modal = ref();
@@ -92,26 +105,25 @@ const editedTask = ref({ ...initialTask, ...props.task });
 const error = ref();
 
 const openModal = () => {
-  editedTask.value = { ...initialTask, ...props.task };
+  editedTask.value = {
+    ...initialTask,
+    ...props.task,
+    category: props.task?.id ? todolist.categoryOf(props.task.id) : UNCATEGORIZED,
+  };
   modal.value.showModal();
 };
 
 const saveTask = () => {
-  if (editedTask.value.id) {
-    try {
-      updateTask(editedTask.value);
-      editedTask.value = { ...initialTask };
-      modal.value.close();
-    } catch (err) {
-      error.value = err;
-    }
-
-    return;
-  }
+  const { category, ...fields } = editedTask.value;
+  const payload = { ...fields, period: fields.period || null };
 
   try {
-    const key = (Math.random() + 1).toString(36).substring(5);
-    addTask({ ...editedTask.value, id: key, completed: false, hidden: false, custom: true });
+    if (payload.id) {
+      updateTask(payload, category);
+    } else {
+      const key = (Math.random() + 1).toString(36).substring(5);
+      addTask({ ...payload, id: key, completed: false, hidden: false, custom: true }, category);
+    }
     editedTask.value = { ...initialTask };
     modal.value.close();
   } catch (err) {

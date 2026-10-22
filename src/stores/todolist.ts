@@ -47,6 +47,11 @@ export const useTodolistStore = defineStore('todolist', {
         pc: Math.min(Math.round((min / max) * 100), 100),
       };
     },
+    categoryOf:
+      (state) =>
+      (taskId: TaskKey): string =>
+        Object.keys(state.layout).find((key) => state.layout[key]?.includes(taskId)) ??
+        UNCATEGORIZED,
   },
   actions: {
     syncLayout() {
@@ -111,27 +116,40 @@ export const useTodolistStore = defineStore('todolist', {
       const [category] = this.categories.splice(from, 1);
       this.categories.splice(to, 0, category!);
     },
-    addTask(task: UserTask) {
+    moveTaskToCategory(taskId: TaskKey, categoryId: string) {
+      for (const ids of Object.values(this.layout)) {
+        const idx = ids.indexOf(taskId);
+        if (idx >= 0) {
+          ids.splice(idx, 1);
+        }
+      }
+      (this.layout[categoryId] ?? this.layout[UNCATEGORIZED])?.push(taskId);
+    },
+    addTask(task: UserTask, categoryId: string = UNCATEGORIZED) {
       if (!task.title || task.title.length < 1) {
         throw new Error('Le titre est obligatoire');
       }
 
       this.tasks.push(task);
+      (this.layout[categoryId] ?? this.layout[UNCATEGORIZED])?.push(task.id);
       this.syncLayout();
 
       return true;
     },
-    updateTask(task: UserTask) {
-      if (!task.title || task.title.length < 1) {
-        throw new Error('Le titre est obligatoire');
+    updateTask(task: UserTask, categoryId: string = UNCATEGORIZED) {
+      if (typeof task.id === 'string') {
+        if (!task.title) {
+          throw new Error('Le titre est obligatoire');
+        }
+        const existing = this.tasks.find((t) => t.id === task.id);
+        if (existing) {
+          Object.assign(existing, task);
+        }
       }
 
-      const idx = this.tasks.findIndex((t) => t.id === task.id);
-      if (idx < 0) {
-        throw new Error('Tâche introuvable');
+      if (categoryId !== this.categoryOf(task.id)) {
+        this.moveTaskToCategory(task.id, categoryId);
       }
-
-      this.tasks[idx] = task;
       this.syncLayout();
 
       return true;

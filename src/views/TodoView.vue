@@ -53,6 +53,12 @@ const sections = computed(() => [
 const tasksOf = (sectionId: string) =>
   (layout.value[sectionId] ?? []).map((id) => tasksById.value.get(id)!);
 
+const completedPc = (sectionId: string) => {
+  const min = tasksOf(sectionId).filter((task) => task.completed && !task.hidden).length || 0;
+  const max = tasksOf(sectionId).filter((task) => !task.hidden).length || 0;
+  return Math.round((min / max) * 100);
+};
+
 const newCategory = ref('');
 const submitCategory = () => {
   addCategory(newCategory.value);
@@ -99,7 +105,7 @@ const isEditMode = ref(false);
         <header
           class="flex items-center gap-2 p-2 bg-neutral rounded-full text-neutral-content min-h-14"
           :class="{
-            'px-6': section.id === UNCATEGORIZED,
+            'pl-6': section.id === UNCATEGORIZED,
           }"
           v-if="categories.length > 0"
         >
@@ -111,8 +117,19 @@ const isEditMode = ref(false);
             <IconFolderLock class="size-5" v-if="section.collapsed" />
             <IconFolderOpen class="size-5" v-else />
           </button>
-          <h2 class="font-semibold">{{ section.title }}</h2>
-          <span class="grow"></span>
+          <h2 class="font-semibold grow">{{ section.title }}</h2>
+          <div
+            class="radial-progress text-[.65rem]"
+            :class="{
+              'text-success': completedPc(section.id) >= 100,
+            }"
+            :style="`--size: 2.5rem; --value: ${completedPc(section.id)}`"
+            :aria-valuenow="completedPc(section.id)"
+            role="progressbar"
+            v-show="completedPc(section.id) > 0 && !isEditMode"
+          >
+            {{ completedPc(section.id) }}%
+          </div>
 
           <template v-if="section.id !== UNCATEGORIZED && isEditMode">
             <button
@@ -150,7 +167,7 @@ const isEditMode = ref(false);
         >
           <div
             class="card bg-base-100 card-xs shadow hover:shadow-lg rounded-full select-none"
-            :class="{ 'opacity-40': task.completed }"
+            :class="{ 'opacity-40': task.completed && !isEditMode }"
             v-for="task in tasksOf(section.id)"
             :key="task.id"
             v-show="!task.hidden || isEditMode"
