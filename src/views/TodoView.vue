@@ -150,6 +150,7 @@ const isEditMode = ref(false);
         >
           <div
             class="card bg-base-100 card-xs shadow hover:shadow-lg rounded-full select-none"
+            :class="{ 'opacity-40': task.completed }"
             v-for="task in tasksOf(section.id)"
             :key="task.id"
             v-show="!task.hidden || isEditMode"
