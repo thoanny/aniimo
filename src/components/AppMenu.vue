@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {
-  IconCalendarWeek,
   IconExternalLink,
   IconFlame,
   IconListCheck,
@@ -23,13 +22,6 @@ const menuItems: MenuItem[] = [
     title: 'Aniimopédia',
     link: '/',
     icon: IconNotebook,
-    external: false,
-  },
-  {
-    id: 'y5VgGSgKKY',
-    title: 'Évènements',
-    link: '/events',
-    icon: IconCalendarWeek,
     external: false,
   },
   {

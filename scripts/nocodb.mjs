@@ -23,6 +23,10 @@ const endpoints = {
     path: './src/data/forms.json',
     url: `${NOCODB_URL}/m5fge5s0sosoxy7/records?pageSize=9999&viewId=vwgld7ohzpfo9nvj`,
   },
+  regions: {
+    path: './src/data/regions.json',
+    url: `${NOCODB_URL}/m9n9o7wmbp698wv/records?pageSize=9999&viewId=vwbbcil4vze0zglu`,
+  },
   homelandAbillities: {
     path: './src/data/homeland-abilities.json',
     url: `${NOCODB_URL}/meerqi8tt4pu0eo/records?pageSize=9999&viewId=vwqqohwn2q4qouj8`,
@@ -30,10 +34,6 @@ const endpoints = {
   aniimoHomelandAbillities: {
     path: './src/data/aniimo-homeland-abilities.json',
     url: `${NOCODB_URL}/mpgwdbkvtsaycx7/records?pageSize=9999&viewId=vwjocit65zq8kfww`,
-  },
-  events: {
-    path: './src/data/events.json',
-    url: `${NOCODB_URL}/m3n0lri1b6dahdj/records?pageSize=9999&viewId=vwnsue7wtzaaug2o`,
   },
   stages: {
     path: './src/data/stages.json',

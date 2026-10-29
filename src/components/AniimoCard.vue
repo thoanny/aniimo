@@ -138,7 +138,12 @@
         <span class="inline-flex items-center">
           {{ aniimo.fields.Title }}
         </span>
-        <span class="font-normal text-xs line-clamp-1">{{ aniimo.fields.Form.fields.Title }}</span>
+        <span class="font-normal text-xs line-clamp-1"
+          >{{ aniimo.fields.Form.fields.Title
+          }}<template v-if="aniimo.fields.Region">
+            · {{ aniimo.fields.Region.fields.Title }}</template
+          ></span
+        >
       </div>
     </div>
   </div>

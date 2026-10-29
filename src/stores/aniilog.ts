@@ -3,6 +3,7 @@ import aniimoData from '@/data/aniimo.json';
 import elementsData from '@/data/elements.json';
 import formsData from '@/data/forms.json';
 import homelandAbilities from '@/data/homeland-abilities.json';
+import regionsData from '@/data/regions.json';
 import rolesData from '@/data/roles.json';
 import stagesData from '@/data/stages.json';
 import { useToastStore } from '@/stores/toast';
@@ -28,6 +29,7 @@ type Filters = {
   status: undefined | number;
   caught: undefined | number;
   stage: undefined | number;
+  region?: undefined | number | null;
 };
 
 type PathfinderCard = {
@@ -56,6 +58,7 @@ const defaultFilters: Filters = {
   status: undefined,
   caught: undefined,
   stage: undefined,
+  region: undefined,
 };
 
 const defaultPathfinderCard: PathfinderCard = {
@@ -164,6 +167,12 @@ export const useAniilogStore = defineStore('aniilog', {
           return aniimo.fields.Form.id === state.filters.form;
         })
         .filter((aniimo) => {
+          if (!state.filters.region) {
+            return true;
+          }
+          return aniimo.fields.Region?.id === state.filters.region;
+        })
+        .filter((aniimo) => {
           if (!state.filters.element) {
             return true;
           }
@@ -220,6 +229,12 @@ export const useAniilogStore = defineStore('aniilog', {
     },
     formSelected: (state) => {
       return formsData.find((form) => form.id === state.filters.form);
+    },
+    regionsFiltered: () => {
+      return regionsData.sort((a, b) => a.fields.Title.localeCompare(b.fields.Title));
+    },
+    regionSelected: (state) => {
+      return regionsData.find((region) => region.id === state.filters.region);
     },
     statusSelected: (state) => {
       return state.filters.status;
